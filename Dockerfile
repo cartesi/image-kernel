@@ -26,10 +26,11 @@ RUN \
     git clone --branch cartesi --depth 1 \
         https://github.com/cartesi/riscv-pk.git
 
+COPY cartesi-config $BASE/kernel/riscv-linux/.config
+
 RUN \
     NPROC=$(nproc) && \
     cd $BASE/kernel/riscv-linux && \
-    cp cartesi-config .config && \
     make ARCH=riscv olddefconfig && \
     make -j$NPROC ARCH=riscv vmlinux && \
     cd $BASE/kernel/riscv-pk && \
