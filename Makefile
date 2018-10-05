@@ -1,4 +1,4 @@
-.PHONY: build push
+.PHONY: build push run share
 
 build:
 	docker build -t cartesi/image-kernel:latest .
