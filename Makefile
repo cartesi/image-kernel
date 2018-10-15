@@ -1,13 +1,20 @@
 .PHONY: build push run share
 
+IMG:=cartesi/image-kernel
+BASE:=/opt/riscv
+ART:=$(BASE)/kernel.bin
+
 build:
-	docker build -t cartesi/image-kernel:latest .
+	docker build -t $(IMG) .
 
-push:
-	docker push cartesi/image-kernel:latest
+push: build
+	docker push $(IMG)
 
-run:
-	docker run -it --rm cartesi/image-kernel:latest
+run: build
+	docker run -it --rm $(IMG)
 
 share:
-	docker run -it --rm -v `pwd`:/opt/riscv/host cartesi/image-kernel:latest
+	docker run -it --rm -v `pwd`:$(BASE)/host $(IMG)
+
+copy: build
+	ID=`docker create $(IMG)` && docker cp $$ID:$(ART) . && docker rm -v $$ID

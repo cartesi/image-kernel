@@ -31,9 +31,11 @@ COPY cartesi-config $BASE/kernel/riscv-linux/.config
 RUN \
     NPROC=$(nproc) && \
     cd $BASE/kernel/riscv-linux && \
+    git pull && \
     make ARCH=riscv olddefconfig && \
     make -j$NPROC ARCH=riscv vmlinux && \
     cd $BASE/kernel/riscv-pk && \
+    git pull && \
     mkdir build && \
     cd build && \
     ../configure --with-payload=$BASE/kernel/riscv-linux/vmlinux \
