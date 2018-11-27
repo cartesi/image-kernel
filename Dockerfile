@@ -41,7 +41,8 @@ RUN \
     ../configure --with-payload=$BASE/kernel/riscv-linux/vmlinux \
         --host=riscv64-unknown-linux-gnu && \
     make -j$NPROC bbl && \
-    riscv64-unknown-linux-gnu-objcopy -O binary bbl $BASE/kernel.bin
+    riscv64-unknown-linux-gnu-objcopy -O binary bbl $BASE/kernel.bin && \
+    truncate -s %4096 $BASE/kernel.bin
 
 USER root
 
