@@ -1,0 +1,126 @@
+From 0a5a67f90ca0e502827ae66edfdd8c456b33d258 Mon Sep 17 00:00:00 2001
+From: Diego Nehab <diego.nehab@gmail.com>
+Date: Wed, 22 May 2019 18:06:35 -0300
+Subject: [PATCH] Apply Cartesi changes.
+
+---
+ bbl/bbl.lds    |  1 +
+ machine/htif.c | 34 +++++++++++++++++++---------------
+ 2 files changed, 20 insertions(+), 15 deletions(-)
+
+diff --git a/bbl/bbl.lds b/bbl/bbl.lds
+index 397cd3f..01318ea 100644
+--- a/bbl/bbl.lds
++++ b/bbl/bbl.lds
+@@ -44,6 +44,7 @@ SECTIONS
+   /*--------------------------------------------------------------------*/
+   /* HTIF, isolated onto separate page                                  */
+   /*--------------------------------------------------------------------*/
++  . = ALIGN(0x1000);
+   .htif :
+   {
+     PROVIDE( __htif_base = . );
+diff --git a/machine/htif.c b/machine/htif.c
+index aae8c56..84d167a 100644
+--- a/machine/htif.c
++++ b/machine/htif.c
+@@ -7,25 +7,24 @@
+ #include "syscall.h"
+ #include <string.h>
+ 
+-extern uint64_t __htif_base;
+-volatile uint64_t tohost __attribute__((section(".htif")));
+-volatile uint64_t fromhost __attribute__((section(".htif")));
+-volatile int htif_console_buf;
++volatile uint64_t *tohost;
++volatile uint64_t *fromhost;
++volatile int htif_console_buf = 0;
+ static spinlock_t htif_lock = SPINLOCK_INIT;
+ uintptr_t htif;
+ 
+ #define TOHOST(base_int)	(uint64_t *)(base_int + TOHOST_OFFSET)
+ #define FROMHOST(base_int)	(uint64_t *)(base_int + FROMHOST_OFFSET)
+ 
+-#define TOHOST_OFFSET		((uintptr_t)tohost - (uintptr_t)__htif_base)
+-#define FROMHOST_OFFSET		((uintptr_t)fromhost - (uintptr_t)__htif_base)
++#define TOHOST_OFFSET		(0)
++#define FROMHOST_OFFSET		(8)
+ 
+ static void __check_fromhost()
+ {
+-  uint64_t fh = fromhost;
++  uint64_t fh = *fromhost;
+   if (!fh)
+     return;
+-  fromhost = 0;
++  *fromhost = 0;
+ 
+   // this should be from the console
+   assert(FROMHOST_DEV(fh) == 1);
+@@ -42,9 +41,9 @@ static void __check_fromhost()
+ 
+ static void __set_tohost(uintptr_t dev, uintptr_t cmd, uintptr_t data)
+ {
+-  while (tohost)
++  while (*tohost)
+     __check_fromhost();
+-  tohost = TOHOST_CMD(dev, cmd, data);
++  *tohost = TOHOST_CMD(dev, cmd, data);
+ }
+ 
+ int htif_console_getchar()
+@@ -72,10 +71,10 @@ static void do_tohost_fromhost(uintptr_t dev, uintptr_t cmd, uintptr_t data)
+     __set_tohost(dev, cmd, data);
+ 
+     while (1) {
+-      uint64_t fh = fromhost;
++      uint64_t fh = *fromhost;
+       if (fh) {
+         if (FROMHOST_DEV(fh) == dev && FROMHOST_CMD(fh) == cmd) {
+-          fromhost = 0;
++          *fromhost = 0;
+           break;
+         }
+         __check_fromhost();
+@@ -109,14 +108,15 @@ void htif_console_putchar(uint8_t ch)
+ void htif_poweroff()
+ {
+   while (1) {
+-    fromhost = 0;
+-    tohost = 1;
++    *fromhost = 0;
++    *tohost = 1;
+   }
+ }
+ 
+ struct htif_scan
+ {
+   int compat;
++  uint64_t reg;
+ };
+ 
+ static void htif_open(const struct fdt_scan_node *node, void *extra)
+@@ -130,15 +130,19 @@ static void htif_prop(const struct fdt_scan_prop *prop, void *extra)
+   struct htif_scan *scan = (struct htif_scan *)extra;
+   if (!strcmp(prop->name, "compatible") && !strcmp((const char*)prop->value, "ucb,htif0")) {
+     scan->compat = 1;
++  } else if (!strcmp(prop->name, "reg")) {
++    fdt_get_address(prop->node->parent, prop->value, &scan->reg);
+   }
+ }
+ 
+ static void htif_done(const struct fdt_scan_node *node, void *extra)
+ {
+   struct htif_scan *scan = (struct htif_scan *)extra;
+-  if (!scan->compat) return;
++  if (!scan->compat || !scan->reg) return;
+ 
+   htif = 1;
++  fromhost = FROMHOST((uintptr_t)scan->reg);
++  tohost = TOHOST((uintptr_t)scan->reg);
+ }
+ 
+ void query_htif(uintptr_t fdt)
+-- 
+2.17.1
+

@@ -1,4 +1,4 @@
-.PHONY: build push run share
+.PHONY: build push run pull share copy
 
 IMG:=cartesi/image-kernel
 BASE:=/opt/riscv
@@ -7,7 +7,7 @@ ART:=$(BASE)/kernel.bin
 build:
 	docker build -t $(IMG) .
 
-push: build
+push:
 	docker push $(IMG)
 
 pull:
