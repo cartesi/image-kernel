@@ -435,7 +435,7 @@ CONFIG_GENERIC_CPU_DEVICES=y
 # CONFIG_GNSS is not set
 CONFIG_MTD=y
 # CONFIG_MTD_REDBOOT_PARTS is not set
-# CONFIG_MTD_CMDLINE_PARTS is not set
+CONFIG_MTD_CMDLINE_PARTS=y
 CONFIG_MTD_OF_PARTS=y
 # CONFIG_MTD_AR7_PARTS is not set
 
@@ -470,7 +470,7 @@ CONFIG_MTD_CFI_I1=y
 CONFIG_MTD_CFI_I2=y
 CONFIG_MTD_RAM=y
 # CONFIG_MTD_ROM is not set
-CONFIG_MTD_ABSENT=y
+# CONFIG_MTD_ABSENT is not set
 
 #
 # Mapping drivers for chip access
@@ -483,7 +483,7 @@ CONFIG_MTD_PLATRAM=y
 # Self-contained MTD device drivers
 #
 # CONFIG_MTD_SLRAM is not set
-CONFIG_MTD_PHRAM=y
+# CONFIG_MTD_PHRAM is not set
 # CONFIG_MTD_MTDRAM is not set
 # CONFIG_MTD_BLOCK2MTD is not set
 
