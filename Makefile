@@ -1,11 +1,20 @@
-.PHONY: build push run pull share copy
+.PHONY: all build push run pull share copy
 
-IMG:=cartesi/image-kernel
+TAG ?= latest
+TOOLCHAIN_TAG ?=
+
+IMG:=cartesi/image-kernel:$(TAG)
 BASE:=/opt/riscv
 ART:=$(BASE)/kernel.bin
 
+ifneq ($(TOOLCHAIN_TAG),)
+BUILD_ARGS := --build-arg TOOLCHAIN_VERSION=$(TOOLCHAIN_TAG)
+endif
+
+all: copy
+
 build:
-	docker build -t $(IMG) .
+	docker build -t $(IMG) $(BUILD_ARGS) .
 
 push:
 	docker push $(IMG)
