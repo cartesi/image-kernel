@@ -74,4 +74,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 ## License
 
-- TODO
+The image-kernel repository and all contributions are licensed under
+[APACHE 2.0](https://www.apache.org/licenses/LICENSE-2.0). Please review our [LICENSE](https://github.com/cartesi/image-kernel/blob/master/LICENSE) file.
+
+
