@@ -44,6 +44,7 @@ RUN \
 # Build riscv-pk and link with kernel
 # ----------------------------------------------------
 COPY riscv-pk.patch $BUILD_BASE
+COPY cartesi-logo.txt $BUILD_BASE
 
 RUN \
     cd ${BUILD_BASE} && \
@@ -54,7 +55,11 @@ RUN \
     git am < ${BUILD_BASE}/riscv-pk.patch && \
     mkdir build && \
     cd build && \
-    ../configure --with-payload=${BUILD_BASE}/linux-4.20.8/vmlinux --host=riscv64-unknown-linux-gnu && \
+    ../configure \
+		--with-payload=${BUILD_BASE}/linux-4.20.8/vmlinux \
+		--host=riscv64-unknown-linux-gnu \
+		--with-logo=${BUILD_BASE}/cartesi-logo.txt \
+		--enable-logo && \
     make bbl && \
     riscv64-unknown-linux-gnu-objcopy -O binary bbl $BASE/kernel.bin && \
     truncate -s %4096 $BASE/kernel.bin
