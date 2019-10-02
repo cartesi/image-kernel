@@ -1,27 +1,41 @@
-From 0a5a67f90ca0e502827ae66edfdd8c456b33d258 Mon Sep 17 00:00:00 2001
+From febf9b31986930f219aef7a1297e13750deb614b Mon Sep 17 00:00:00 2001
 From: Diego Nehab <diego.nehab@gmail.com>
-Date: Wed, 22 May 2019 18:06:35 -0300
-Subject: [PATCH] Apply Cartesi changes.
+Date: Wed, 12 Sep 2018 00:27:20 -0300
+Subject: [PATCH 1/2] Get HTIF parameters from device tree
 
+BBL expects the emulator to figure out the HTIF addresses from symbols
+exported in the BBL ELF binary.
+
+Instead, it is the emulator that should dictate the HTIF addresses. BBL
+then should obtain this information from the device tree.
 ---
- bbl/bbl.lds    |  1 +
- machine/htif.c | 34 +++++++++++++++++++---------------
- 2 files changed, 20 insertions(+), 15 deletions(-)
+ bbl/bbl.lds    | 10 ----------
+ machine/htif.c | 38 +++++++++++++++++++++-----------------
+ 2 files changed, 21 insertions(+), 27 deletions(-)
 
 diff --git a/bbl/bbl.lds b/bbl/bbl.lds
-index 397cd3f..01318ea 100644
+index 624f691..be2105a 100644
 --- a/bbl/bbl.lds
 +++ b/bbl/bbl.lds
-@@ -44,6 +44,7 @@ SECTIONS
+@@ -41,16 +41,6 @@ SECTIONS
+   . = ALIGN(0x1000);
+   _etext = .;
+ 
+-  /*--------------------------------------------------------------------*/
+-  /* HTIF, isolated onto separate page                                  */
+-  /*--------------------------------------------------------------------*/
+-  .htif :
+-  {
+-    PROVIDE( __htif_base = . );
+-    *(.htif)
+-  }
+-  . = ALIGN(0x1000);
+-
    /*--------------------------------------------------------------------*/
-   /* HTIF, isolated onto separate page                                  */
+   /* Initialized data segment                                           */
    /*--------------------------------------------------------------------*/
-+  . = ALIGN(0x1000);
-   .htif :
-   {
-     PROVIDE( __htif_base = . );
 diff --git a/machine/htif.c b/machine/htif.c
-index aae8c56..84d167a 100644
+index aae8c56..9cd53ec 100644
 --- a/machine/htif.c
 +++ b/machine/htif.c
 @@ -7,25 +7,24 @@
@@ -32,20 +46,22 @@ index aae8c56..84d167a 100644
 -volatile uint64_t tohost __attribute__((section(".htif")));
 -volatile uint64_t fromhost __attribute__((section(".htif")));
 -volatile int htif_console_buf;
+-static spinlock_t htif_lock = SPINLOCK_INIT;
 +volatile uint64_t *tohost;
 +volatile uint64_t *fromhost;
 +volatile int htif_console_buf = 0;
- static spinlock_t htif_lock = SPINLOCK_INIT;
  uintptr_t htif;
++static spinlock_t htif_lock = SPINLOCK_INIT;
++
++#define TOHOST_OFFSET		(0)
++#define FROMHOST_OFFSET		(8)
  
  #define TOHOST(base_int)	(uint64_t *)(base_int + TOHOST_OFFSET)
  #define FROMHOST(base_int)	(uint64_t *)(base_int + FROMHOST_OFFSET)
  
 -#define TOHOST_OFFSET		((uintptr_t)tohost - (uintptr_t)__htif_base)
 -#define FROMHOST_OFFSET		((uintptr_t)fromhost - (uintptr_t)__htif_base)
-+#define TOHOST_OFFSET		(0)
-+#define FROMHOST_OFFSET		(8)
- 
+-
  static void __check_fromhost()
  {
 -  uint64_t fh = fromhost;
