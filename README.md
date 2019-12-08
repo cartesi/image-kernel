@@ -2,7 +2,7 @@
 
 # Cartesi Machine Image Kernel 
 
-The Cartesi Image Kernel is the repository that provides the Docker configuration files to build the `kernel.bin` testing Linux kernel. This is used to run a Linux environment on the Cartesi Machine Emulator reference implementation. The current image is based on the `cartesi/image-toolchain` that uses Ubuntu 18.04 and GNU GCC 8.3.0. The `kernel.bin` is built from the Linux 4.20.x source, targeting the RISC-V RV64IMA with ABI LP64 architecture.
+The Cartesi Image Kernel is the repository that provides the Docker configuration files to build the `kernel.bin` testing Linux kernel. This is used to run a Linux environment on the Cartesi Machine Emulator reference implementation. The current image is based on the `cartesi/toolchain` that uses Ubuntu 18.04 and GNU GCC 8.3.0. The `kernel.bin` is built from the Linux 4.20.x source, targeting the RISC-V RV64IMA with ABI LP64 architecture.
 
 ## Getting Started
 
@@ -40,7 +40,7 @@ The following options are available as `make` targets:
 You can pass the following variables to the make target if you wish to use different docker image tags.
 
 - TAG: image-roofs image tag
-- TOOLCHAIN\_TAG: image-toolchain image tag
+- TOOLCHAIN\_TAG: toolchain image tag
 
 ```
 $ make build TAG=mytag
@@ -65,9 +65,9 @@ $ make run
 
 ## Contributing
 
-Thank you for your interest in Cartesi! Head over to our [Contributing Guidelines](https://github.com/cartesi/image-kernel/blob/master/CONTRIBUTING.md) for instructions on how to sign our Contributors Agreement and get started with Cartesi!
+Thank you for your interest in Cartesi! Head over to our [Contributing Guidelines](CONTRIBUTING.md) for instructions on how to sign our Contributors Agreement and get started with Cartesi!
 
-Please note we have a [Code of Conduct](https://github.com/cartesi/image-kernel/blob/master/CODE_OF_CONDUCT.md), please follow it in all your interactions with the project.
+Please note we have a [Code of Conduct](CODE_OF_CONDUCT.md), please follow it in all your interactions with the project.
 
 ## Authors
 
@@ -77,6 +77,6 @@ Please note we have a [Code of Conduct](https://github.com/cartesi/image-kernel/
 ## License
 
 The image-kernel repository and all contributions are licensed under
-[APACHE 2.0](https://www.apache.org/licenses/LICENSE-2.0). Please review our [LICENSE](https://github.com/cartesi/image-kernel/blob/master/LICENSE) file.
+[APACHE 2.0](https://www.apache.org/licenses/LICENSE-2.0). Please review our [LICENSE](LICENSE) file.
 
 

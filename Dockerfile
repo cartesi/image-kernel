@@ -12,7 +12,7 @@
 #
 
 ARG TOOLCHAIN_VERSION=latest
-FROM cartesi/image-toolchain:${TOOLCHAIN_VERSION}
+FROM cartesi/toolchain:${TOOLCHAIN_VERSION}
 
 LABEL maintainer="Diego Nehab <diego@cartesi.io>"
 
