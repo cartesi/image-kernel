@@ -14,7 +14,7 @@
 .PHONY: all build push run pull share copy
 
 TAG ?= latest
-TOOLCHAIN_TAG ?=
+TOOLCHAIN_TAG ?= 0.1.0
 
 CONTAINER_BASE := /opt/cartesi/image-kernel
 
