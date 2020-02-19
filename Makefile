@@ -49,6 +49,7 @@ run:
 
 run-as-root:
 	docker run --hostname toolchain-env -it --rm \
+		-v `pwd`:$(CONTAINER_BASE) \
 		$(IMG) $(CONTAINER_COMMAND)
 
 copy: build

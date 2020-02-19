@@ -22,21 +22,23 @@ ENV OLDPATH=$PATH
 
 ENV BUILD_BASE=$BASE/kernel
 
+ENV KV=5.5.4
+
 # Build linux kernel
 # ----------------------------------------------------
 
 RUN \
     mkdir -p $BUILD_BASE
 
+RUN \
+    cd ${BUILD_BASE} && \
+    wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${KV}.tar.xz && \
+    tar -Jxvf linux-${KV}.tar.xz
+
 COPY linux-config $BUILD_BASE
 
 RUN \
-    cd ${BUILD_BASE} && \
-    wget https://www.kernel.org/pub/linux/kernel/v4.x/linux-4.20.8.tar.xz && \
-    tar -Jxvf linux-4.20.8.tar.xz
-
-RUN \
-    cd ${BUILD_BASE}/linux-4.20.8 && \
+    cd ${BUILD_BASE}/linux-${KV} && \
     cp ../linux-config .config && \
     make ARCH=riscv olddefconfig && \
     make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j$(nproc) vmlinux
@@ -57,7 +59,7 @@ RUN \
     mkdir build && \
     cd build && \
     ../configure \
- 		--with-payload=${BUILD_BASE}/linux-4.20.8/vmlinux \
+ 		--with-payload=${BUILD_BASE}/linux-${KV}/vmlinux \
  		--host=riscv64-unknown-linux-gnu \
  		--with-logo=${BUILD_BASE}/cartesi-logo.txt \
  		--enable-logo && \
