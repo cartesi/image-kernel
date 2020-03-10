@@ -35,10 +35,12 @@ RUN \
     wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${KV}.tar.xz && \
     tar -Jxvf linux-${KV}.tar.xz
 
+COPY kernel-patches $BUILD_BASE/kernel-patches
 COPY linux-config $BUILD_BASE
 
 RUN \
     cd ${BUILD_BASE}/linux-${KV} && \
+    for p in ${BUILD_BASE}/kernel-patches/* ; do patch -p1 < $p ; done && \
     cp ../linux-config .config && \
     make ARCH=riscv olddefconfig && \
     make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j$(nproc) vmlinux
