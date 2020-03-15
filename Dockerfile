@@ -42,7 +42,7 @@ RUN \
     cd ${BUILD_BASE}/linux-${KV} && \
     for p in ${BUILD_BASE}/kernel-patches/* ; do patch -p1 < $p ; done && \
     cp ../linux-config .config && \
-    make ARCH=riscv olddefconfig && \
+    make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- olddefconfig && \
     make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j$(nproc) vmlinux
 
 # Build riscv-pk and link with kernel

@@ -1,7 +1,7 @@
-From febf9b31986930f219aef7a1297e13750deb614b Mon Sep 17 00:00:00 2001
+From 59ed5d6f02f1079f605e1ad9262c9b016445051e Mon Sep 17 00:00:00 2001
 From: Diego Nehab <diego.nehab@gmail.com>
 Date: Wed, 12 Sep 2018 00:27:20 -0300
-Subject: [PATCH 1/2] Get HTIF parameters from device tree
+Subject: [PATCH 1/3] Get HTIF parameters from device tree
 
 BBL expects the emulator to figure out the HTIF addresses from symbols
 exported in the BBL ELF binary.
@@ -138,5 +138,5 @@ index aae8c56..9cd53ec 100644
  
  void query_htif(uintptr_t fdt)
 -- 
-2.17.1
+2.24.1
 

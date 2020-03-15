@@ -1,7 +1,7 @@
-From 8dd8b0bd4680f34e715ff3a6668713c46396c301 Mon Sep 17 00:00:00 2001
-From: Your Name <you@example.com>
+From 77f9b2757130788bbe913450e167dcc144fb6b84 Mon Sep 17 00:00:00 2001
+From: Diego Nehab <diego@cartesi.io>
 Date: Wed, 2 Oct 2019 14:56:36 -0300
-Subject: [PATCH 2/2] Remove unecessary BBL console output
+Subject: [PATCH 2/3] Remove unecessary BBL console output
 
 Remove "bbl loader" duriing initialization.
 Remove "Power off" during shutdown.
@@ -37,5 +37,5 @@ index 42006b8..99f98db 100644
    if (htif) {
      htif_poweroff();
 -- 
-2.17.1
+2.24.1
 
