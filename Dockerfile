@@ -43,7 +43,8 @@ RUN \
     for p in ${BUILD_BASE}/kernel-patches/* ; do patch -p1 < $p ; done && \
     cp ../linux-config .config && \
     make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- olddefconfig && \
-    make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j$(nproc) vmlinux
+    make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j$(nproc) vmlinux && \
+    make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- INSTALL_HDR_PATH=/opt/riscv/usr  headers_install
 
 # Build riscv-pk and link with kernel
 # ----------------------------------------------------

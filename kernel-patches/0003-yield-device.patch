@@ -1,0 +1,165 @@
+diff -Nru linux-5.5.4.orig/arch/riscv/configs/defconfig linux-5.5.4.new/arch/riscv/configs/defconfig
+--- linux-5.5.4.orig/arch/riscv/configs/defconfig	2020-02-14 18:53:07.000000000 -0300
++++ linux-5.5.4.new/arch/riscv/configs/defconfig	2020-06-18 14:49:55.000000000 -0300
+@@ -125,3 +125,4 @@
+ # CONFIG_FTRACE is not set
+ # CONFIG_RUNTIME_TESTING_MENU is not set
+ CONFIG_MEMTEST=y
++CONFIG_CARTESI_MACHINE=y
+diff -Nru linux-5.5.4.orig/drivers/Kconfig linux-5.5.4.new/drivers/Kconfig
+--- linux-5.5.4.orig/drivers/Kconfig	2020-02-14 18:53:07.000000000 -0300
++++ linux-5.5.4.new/drivers/Kconfig	2020-05-23 22:41:37.000000000 -0300
+@@ -228,4 +228,6 @@
+ 
+ source "drivers/counter/Kconfig"
+ 
++source "drivers/cartesi/Kconfig"
++
+ endmenu
+diff -Nru linux-5.5.4.orig/drivers/Makefile linux-5.5.4.new/drivers/Makefile
+--- linux-5.5.4.orig/drivers/Makefile	2020-02-14 18:53:07.000000000 -0300
++++ linux-5.5.4.new/drivers/Makefile	2020-06-18 14:48:11.000000000 -0300
+@@ -186,3 +186,4 @@
+ obj-$(CONFIG_GNSS)		+= gnss/
+ obj-$(CONFIG_INTERCONNECT)	+= interconnect/
+ obj-$(CONFIG_COUNTER)		+= counter/
++obj-$(CONFIG_CARTESI_MACHINE) += cartesi/
+diff -Nru linux-5.5.4.orig/drivers/cartesi/Kconfig linux-5.5.4.new/drivers/cartesi/Kconfig
+--- linux-5.5.4.orig/drivers/cartesi/Kconfig	1969-12-31 21:00:00.000000000 -0300
++++ linux-5.5.4.new/drivers/cartesi/Kconfig	2020-06-18 15:44:03.000000000 -0300
+@@ -0,0 +1,17 @@
++menu "Cartesi Machine"
++
++config CARTESI_MACHINE
++    bool "Cartesi Machine "
++    depends on RISCV_SBI
++    default y if  RISCV_SBI
++    help
++        Enable support for the Cartesi Machine
++
++config CARTESI_YIELD_DRIVER
++    bool "Cartesi Machine Yield Device"
++    depends on CARTESI_MACHINE
++    default y
++    help
++        Cartesi Machine Yield Device
++
++endmenu
+diff -Nru linux-5.5.4.orig/drivers/cartesi/Makefile linux-5.5.4.new/drivers/cartesi/Makefile
+--- linux-5.5.4.orig/drivers/cartesi/Makefile	1969-12-31 21:00:00.000000000 -0300
++++ linux-5.5.4.new/drivers/cartesi/Makefile	2020-06-18 15:28:17.000000000 -0300
+@@ -0,0 +1 @@
++obj-$(CONFIG_CARTESI_YIELD_DRIVER) += yield.o
+diff -Nru linux-5.5.4.orig/drivers/cartesi/yield.c linux-5.5.4.new/drivers/cartesi/yield.c
+--- linux-5.5.4.orig/drivers/cartesi/yield.c	1969-12-31 21:00:00.000000000 -0300
++++ linux-5.5.4.new/drivers/cartesi/yield.c	2020-06-12 08:58:35.000000000 -0300
+@@ -0,0 +1,82 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Cartesi yield device.
++ * Copyright (C) 2020 Cartesi Pte. Ltd.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/ioctl.h>
++#include <linux/uaccess.h>
++#include <linux/fs.h>
++#include <linux/device.h>
++#include <linux/miscdevice.h>
++#include <asm/sbi.h>
++
++#include <uapi/linux/cartesi/yield.h>
++
++#define DEVICE_NAME "yield"
++#define MODULE_DESC "Cartesi Machine " DEVICE_NAME " device"
++
++#define SBI_YIELD 9
++
++static long yield_drv_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
++{
++    struct yield_request request;
++    uint64_t yield_cmd, sbi_cmd;
++    int ret;
++
++    if (cmd != IOCTL_YIELD)
++        return -ENOIOCTLCMD;
++
++    if ((ret = copy_from_user(&request, (void __user*)arg, sizeof(request))))
++        return ret;
++
++    sbi_cmd = request.tohost << 8 >> 8;
++    yield_cmd = sbi_cmd << 8 >> 56;
++
++    if (yield_cmd != HTIF_YIELD_PROGRESS && yield_cmd != HTIF_YIELD_ROLLUP)
++        return -EINVAL;
++
++    request.fromhost = SBI_CALL_1(SBI_YIELD, sbi_cmd);
++
++    if ((ret = copy_to_user((void __user *)arg, &request, sizeof(request))))
++        return ret;
++
++    return 0;
++}
++
++static const struct file_operations fileops = {
++    .owner          = THIS_MODULE,
++    .unlocked_ioctl = yield_drv_ioctl
++};
++
++static struct miscdevice yield_dev = {
++    .minor = MISC_DYNAMIC_MINOR,
++    .name  = DEVICE_NAME,
++    .fops  = &fileops
++};
++
++static int __init yield_dev_init(void)
++{
++    int ret = misc_register(&yield_dev);
++    if (ret) {
++        pr_err(MODULE_DESC ": Registration failed with error %d\n", ret);
++        return ret;
++    }
++
++    pr_info(MODULE_DESC ": Module loaded\n");
++    return 0;
++}
++
++static void __exit yield_dev_exit(void)
++{
++    misc_deregister(&yield_dev);
++    pr_info(MODULE_DESC ": Module unloaded\n");
++}
++
++module_init(yield_dev_init);
++module_exit(yield_dev_exit);
++
++MODULE_DESCRIPTION(MODULE_DESC);
++MODULE_LICENSE("GPL");
+diff -Nru linux-5.5.4.orig/include/uapi/linux/cartesi/yield.h linux-5.5.4.new/include/uapi/linux/cartesi/yield.h
+--- linux-5.5.4.orig/include/uapi/linux/cartesi/yield.h	1969-12-31 21:00:00.000000000 -0300
++++ linux-5.5.4.new/include/uapi/linux/cartesi/yield.h	2020-06-12 17:18:04.000000000 -0300
+@@ -0,0 +1,23 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/*
++ * Cartesi yield device.
++ * Copyright (C) 2020 Cartesi Pte. Ltd.
++ */
++
++#ifndef _UAPI_LINUX_CARTESI_YIELD_H
++#define _UAPI_LINUX_CARTESI_YIELD_H
++
++#include <linux/ioctl.h>
++#include <linux/types.h>
++
++struct yield_request {
++    uint64_t tohost;
++    uint64_t fromhost;
++};
++
++#define HTIF_YIELD_PROGRESS 0
++#define HTIF_YIELD_ROLLUP   1
++
++#define IOCTL_YIELD   _IOWR(0xd1, 0, struct yield_request)
++
++#endif
