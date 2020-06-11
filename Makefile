@@ -16,11 +16,11 @@
 TAG ?= latest
 TOOLCHAIN_TAG ?= 0.2.0
 
-CONTAINER_BASE := /opt/cartesi/image-kernel
+CONTAINER_BASE := /opt/cartesi/image-linux-kernel
 
-IMG:=cartesi/image-kernel:$(TAG)
+IMG:=cartesi/linux-kernel:$(TAG)
 BASE:=/opt/riscv
-ART:=$(BASE)/kernel.bin
+ART:=$(BASE)/linux.bin
 
 ifneq ($(TOOLCHAIN_TAG),)
 BUILD_ARGS := --build-arg TOOLCHAIN_VERSION=$(TOOLCHAIN_TAG)

@@ -66,8 +66,8 @@ RUN \
  		--with-logo=${BUILD_BASE}/cartesi-logo.txt \
  		--enable-logo && \
     make bbl && \
-    riscv64-unknown-linux-gnu-objcopy -O binary bbl $BASE/kernel.bin && \
-    truncate -s %4096 $BASE/kernel.bin
+    riscv64-unknown-linux-gnu-objcopy -O binary bbl $BASE/linux.bin && \
+    truncate -s %4096 $BASE/linux.bin
 
 WORKDIR $BASE
 

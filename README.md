@@ -1,8 +1,8 @@
 > :warning: The Cartesi team keeps working internally on the next version of this repository, following its regular development roadmap. Whenever there's a new version ready or important fix, these are published to the public source tree as new releases.
 
-# Cartesi Machine Image Kernel 
+# Cartesi Machine Image Linux Kernel 
 
-The Cartesi Image Kernel is the repository that provides the Docker configuration files to build the `kernel.bin` testing Linux kernel. This is used to run a Linux environment on the Cartesi Machine Emulator reference implementation. The current image is based on the `cartesi/toolchain` that uses Ubuntu 18.04 and GNU GCC 8.3.0. The `kernel.bin` is built from the Linux 4.20.x source, targeting the RISC-V RV64IMA with ABI LP64 architecture.
+The Cartesi Image Linux Kernel is the repository that provides the Docker configuration files to build the Linux kernel `linux.bin` image. This is used to run a Linux environment on the Cartesi Machine Emulator reference implementation. The current image is based on the `cartesi/toolchain` that uses Ubuntu 18.04 and GNU GCC 8.3.0. The `linux.bin` is built from the Linux 5.5.x source, targeting the RISC-V RV64IMA with ABI LP64 architecture.
 
 ## Getting Started
 
@@ -55,7 +55,7 @@ $ make run TAG=latest
 
 ## Usage
 
-The purpose of this image is to build the `kernel.bin` artifact so it can be used with the emulator. For instructions on how to do that, please see the emulator documentation.
+The purpose of this image is to build the `linux.bin` artifact so it can be used with the emulator. For instructions on how to do that, please see the emulator documentation.
 
 If you want to play around on the environment you can also do:
 
