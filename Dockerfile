@@ -16,59 +16,60 @@ FROM cartesi/toolchain:${TOOLCHAIN_VERSION}
 
 LABEL maintainer="Diego Nehab <diego@cartesi.io>"
 
+ARG KERNEL_VERSION=5.5.19-ctsi-1
+ARG RISCV_PK_VERSION=1.0.0-ctsi-1
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 ENV OLDPATH=$PATH
 
 ENV BUILD_BASE=$BASE/kernel
 
-ENV KV=5.5.4
-
 # Build linux kernel
 # ----------------------------------------------------
 
 RUN \
-    mkdir -p $BUILD_BASE
+    mkdir -p $BUILD_BASE/artifacts
 
 RUN \
     cd ${BUILD_BASE} && \
-    wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${KV}.tar.xz && \
-    tar -Jxvf linux-${KV}.tar.xz
+    wget -O linux-${KERNEL_VERSION}.tar.gz https://github.com/cartesi/linux/archive/v${KERNEL_VERSION}.tar.gz && \
+    tar -zxvf linux-${KERNEL_VERSION}.tar.gz && \
+    rm -f linux-${KERNEL_VERSION}.tar.gz
 
-COPY kernel-patches $BUILD_BASE/kernel-patches
-COPY linux-config $BUILD_BASE
+COPY cartesi-linux-config $BUILD_BASE/linux-${KERNEL_VERSION}/cartesi-linux-config
 
 RUN \
-    cd ${BUILD_BASE}/linux-${KV} && \
-    for p in ${BUILD_BASE}/kernel-patches/* ; do patch -p1 < $p ; done && \
-    cp ../linux-config .config && \
+    cd ${BUILD_BASE}/linux-${KERNEL_VERSION} && \
+    cp cartesi-linux-config .config && \
     make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- olddefconfig && \
     make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j$(nproc) vmlinux && \
-    make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- INSTALL_HDR_PATH=/opt/riscv/usr  headers_install
+    make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- INSTALL_HDR_PATH=/opt/riscv/kernel/linux-headers-${KERNEL_VERSION} headers_install && \
+    cd ${BUILD_BASE} && \
+    tar -cJf artifacts/linux-headers-${KERNEL_VERSION}.tar.xz linux-headers-${KERNEL_VERSION}
 
 # Build riscv-pk and link with kernel
 # ----------------------------------------------------
-COPY riscv-pk-patches $BUILD_BASE/riscv-pk-patches
-COPY cartesi-logo.txt $BUILD_BASE
-
 RUN \
     cd ${BUILD_BASE} && \
-    git clone https://github.com/riscv/riscv-pk.git && \
-    cd riscv-pk && \
-    git config --global user.email "diego@cartesi.io" && \
-    git config --global user.name "Diego Nehab" && \
-    git checkout 099c99482f7ac032bf04caad13a9ca1da7ce58ed && \
-    git am ${BUILD_BASE}/riscv-pk-patches/* && \
+    wget -O riscv-pk-${RISCV_PK_VERSION}.tar.gz https://github.com/cartesi/riscv-pk/archive/v${RISCV_PK_VERSION}.tar.gz && \
+    tar -zxvf riscv-pk-${RISCV_PK_VERSION}.tar.gz && \
+    rm -f riscv-pk-${RISCV_PK_VERSION}.tar.gz
+
+COPY cartesi-logo.txt ${BUILD_BASE}/riscv-pk-${RISCV_PK_VERSION}/cartesi-logo.txt
+
+RUN \
+    cd ${BUILD_BASE}/riscv-pk-${RISCV_PK_VERSION} && \
     mkdir build && \
     cd build && \
     ../configure \
- 		--with-payload=${BUILD_BASE}/linux-${KV}/vmlinux \
+ 		--with-payload=${BUILD_BASE}/linux-${KERNEL_VERSION}/vmlinux \
  		--host=riscv64-unknown-linux-gnu \
- 		--with-logo=${BUILD_BASE}/cartesi-logo.txt \
+ 		--with-logo=${BUILD_BASE}/riscv-pk-${RISCV_PK_VERSION}/cartesi-logo.txt \
  		--enable-logo && \
     make bbl && \
-    riscv64-unknown-linux-gnu-objcopy -O binary bbl $BASE/linux.bin && \
-    truncate -s %4096 $BASE/linux.bin
+    riscv64-unknown-linux-gnu-objcopy -O binary bbl ${BUILD_BASE}/artifacts/linux-${KERNEL_VERSION}.bin && \
+    truncate -s %4096 ${BUILD_BASE}/artifacts/linux-${KERNEL_VERSION}.bin
 
 WORKDIR $BASE
 

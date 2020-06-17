@@ -1,1 +1,2 @@
-kernel.bin
+linux*.bin
+linux*.tar.xz

@@ -15,15 +15,28 @@
 
 TAG ?= latest
 TOOLCHAIN_TAG ?= 0.2.0
+KERNEL_VERSION ?= 5.5.19-ctsi-1-rc1
+RISCV_PK_VERSION ?= 1.0.0-ctsi-1-rc1
 
 CONTAINER_BASE := /opt/cartesi/image-linux-kernel
 
 IMG:=cartesi/linux-kernel:$(TAG)
 BASE:=/opt/riscv
-ART:=$(BASE)/linux.bin
+LINUX_KERNEL:=$(BASE)/kernel/artifacts/linux-${KERNEL_VERSION}.bin
+LINUX_HEADERS:=$(BASE)/kernel/artifacts/linux-headers-${KERNEL_VERSION}.tar.xz
+
+BUILD_ARGS :=
 
 ifneq ($(TOOLCHAIN_TAG),)
-BUILD_ARGS := --build-arg TOOLCHAIN_VERSION=$(TOOLCHAIN_TAG)
+BUILD_ARGS += --build-arg TOOLCHAIN_VERSION=$(TOOLCHAIN_TAG)
+endif
+
+ifneq ($(KERNEL_VERSION),)
+BUILD_ARGS += --build-arg KERNEL_VERSION=$(KERNEL_VERSION)
+endif
+
+ifneq ($(RISCV_PK_VERSION),)
+BUILD_ARGS += --build-arg RISCV_PK_VERSION=$(RISCV_PK_VERSION)
 endif
 
 all: copy
@@ -53,4 +66,4 @@ run-as-root:
 		$(IMG) $(CONTAINER_COMMAND)
 
 copy: build
-	ID=`docker create $(IMG)` && docker cp $$ID:$(ART) . && docker rm -v $$ID
+	ID=`docker create $(IMG)` && docker cp $$ID:$(LINUX_KERNEL) . && docker cp $$ID:$(LINUX_HEADERS) . && docker rm -v $$ID

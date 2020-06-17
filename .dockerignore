@@ -1,3 +1,4 @@
 .git*
-kernel.bin
+linux*.bin
+linux*.tar.xz
 README.md
