@@ -1,4 +1,5 @@
 .git*
 linux*.bin
 linux*.tar.xz
+configs
 README.md

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Discover host directory mounted inside docker
+LOCAL_VOLUME_MOUNT=$(cd $(dirname ${BASH_SOURCE[0]})/../ >/dev/null 2>&1 && pwd)
+if [ ! -d "$LOCAL_VOLUME_MOUNT" ]; then
+    echo "Invalid mount point: $LOCAL_VOLUME_MOUNT"
+    echo "Usage:" $0 /path/to/local/volume/mount
+    exit 1;
+fi
+
+# Discover linux source directory on this image
+LINUX_DIR=$(find ${BUILD_BASE} -maxdepth 1 -regex ".*linux-[0-9.]*-ctsi-.*" -type d)
+if [ ! -d "$LINUX_DIR" ]; then
+    echo "Linux source not found at: " ${BUILD_BASE}
+fi
+
+cd $LINUX_DIR
+make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- menuconfig
+cp .config ${LOCAL_VOLUME_MOUNT}/cartesi-linux-config

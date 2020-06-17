@@ -11,12 +11,13 @@
 # the License.
 #
 
-.PHONY: all build push run pull share copy
+.PHONY: all build push run pull share copy clean clean-config
 
-TAG ?= latest
-TOOLCHAIN_TAG ?= 0.2.0
-KERNEL_VERSION ?= 5.5.19-ctsi-1-rc1
-RISCV_PK_VERSION ?= 1.0.0-ctsi-1-rc1
+TAG ?= devel
+TOOLCHAIN_TAG ?= 0.3.0
+KERNEL_VERSION ?= 5.5.19-ctsi-1
+RISCV_PK_VERSION ?= 1.0.0-ctsi-1
+KERNEL_CONFIG ?= configs/default-linux-config
 
 CONTAINER_BASE := /opt/cartesi/image-linux-kernel
 
@@ -41,7 +42,7 @@ endif
 
 all: copy
 
-build:
+build: cartesi-linux-config
 	docker build -t $(IMG) $(BUILD_ARGS) .
 
 push:
@@ -65,5 +66,17 @@ run-as-root:
 		-v `pwd`:$(CONTAINER_BASE) \
 		$(IMG) $(CONTAINER_COMMAND)
 
+config: CONTAINER_COMMAND := $(CONTAINER_BASE)/scripts/update-linux-config
+config: run-as-root cartesi-linux-config
+
 copy: build
 	ID=`docker create $(IMG)` && docker cp $$ID:$(LINUX_KERNEL) . && docker cp $$ID:$(LINUX_HEADERS) . && docker rm -v $$ID
+
+cartesi-linux-config:
+	cp $(KERNEL_CONFIG) ./cartesi-linux-config
+
+clean-config:
+	rm -f ./cartesi-linux-config
+
+clean: clean-config
+	rm -f linux*.tar.xz linux*.bin
