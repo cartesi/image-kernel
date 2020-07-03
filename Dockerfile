@@ -32,6 +32,12 @@ RUN \
     mkdir -p $BUILD_BASE/artifacts
 
 RUN \
+    chown -R developer:developer $BUILD_BASE && \
+    chmod go+w $BUILD_BASE
+
+USER developer
+
+RUN \
     cd ${BUILD_BASE} && \
     wget -O linux-${KERNEL_VERSION}.tar.gz https://github.com/cartesi/linux/archive/v${KERNEL_VERSION}.tar.gz && \
     tar -zxvf linux-${KERNEL_VERSION}.tar.gz && \
@@ -70,6 +76,8 @@ RUN \
     make bbl && \
     riscv64-unknown-linux-gnu-objcopy -O binary bbl ${BUILD_BASE}/artifacts/linux-${KERNEL_VERSION}.bin && \
     truncate -s %4096 ${BUILD_BASE}/artifacts/linux-${KERNEL_VERSION}.bin
+
+USER root
 
 WORKDIR $BASE
 

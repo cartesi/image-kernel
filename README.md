@@ -2,7 +2,7 @@
 
 # Cartesi Machine Image Linux Kernel 
 
-The Cartesi Image Linux Kernel is the repository that provides the Docker configuration files to build the Linux kernel `linux.bin` image. This is used to run a Linux environment on the Cartesi Machine Emulator reference implementation. The current image is based on the `cartesi/toolchain` that uses Ubuntu 18.04 and GNU GCC 8.3.0. The `linux.bin` is built from the Linux 5.5.x source, targeting the RISC-V RV64IMA with ABI LP64 architecture.
+The Cartesi Image Linux Kernel is the repository that provides the Docker configuration files to build the Linux kernel `linux.bin` image. This is used to run a Linux environment on the Cartesi Machine Emulator reference implementation. The current image is based on the `cartesi/toolchain` that uses Ubuntu 20.04 and GNU GCC 9.3.0. The `linux.bin` is built from the Linux 5.5.x source, targeting the RISC-V RV64IMA with ABI LP64 architecture.
 
 ## Getting Started
 
