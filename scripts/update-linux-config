@@ -15,5 +15,5 @@ if [ ! -d "$LINUX_DIR" ]; then
 fi
 
 cd $LINUX_DIR
-make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- menuconfig
+make ARCH=riscv CROSS_COMPILE=riscv64-cartesi-linux-gnu- menuconfig
 cp .config ${LOCAL_VOLUME_MOUNT}/cartesi-linux-config

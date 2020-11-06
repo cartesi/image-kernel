@@ -16,7 +16,7 @@ FROM cartesi/toolchain:${TOOLCHAIN_VERSION}
 
 LABEL maintainer="Diego Nehab <diego@cartesi.io>"
 
-ARG KERNEL_VERSION=5.5.19-ctsi-1
+ARG KERNEL_VERSION=5.5.19-ctsi-2
 ARG RISCV_PK_VERSION=1.0.0-ctsi-1
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -48,9 +48,9 @@ COPY cartesi-linux-config $BUILD_BASE/linux-${KERNEL_VERSION}/cartesi-linux-conf
 RUN \
     cd ${BUILD_BASE}/linux-${KERNEL_VERSION} && \
     cp cartesi-linux-config .config && \
-    make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- olddefconfig && \
-    make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j$(nproc) vmlinux && \
-    make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- INSTALL_HDR_PATH=/opt/riscv/kernel/linux-headers-${KERNEL_VERSION} headers_install && \
+    make ARCH=riscv CROSS_COMPILE=riscv64-cartesi-linux-gnu- olddefconfig && \
+    make ARCH=riscv CROSS_COMPILE=riscv64-cartesi-linux-gnu- -j$(nproc) vmlinux && \
+    make ARCH=riscv CROSS_COMPILE=riscv64-cartesi-linux-gnu- INSTALL_HDR_PATH=/opt/riscv/kernel/linux-headers-${KERNEL_VERSION} headers_install && \
     cd ${BUILD_BASE} && \
     tar -cJf artifacts/linux-headers-${KERNEL_VERSION}.tar.xz linux-headers-${KERNEL_VERSION}
 
@@ -70,11 +70,11 @@ RUN \
     cd build && \
     ../configure \
  		--with-payload=${BUILD_BASE}/linux-${KERNEL_VERSION}/vmlinux \
- 		--host=riscv64-unknown-linux-gnu \
+ 		--host=riscv64-cartesi-linux-gnu \
  		--with-logo=${BUILD_BASE}/riscv-pk-${RISCV_PK_VERSION}/cartesi-logo.txt \
  		--enable-logo && \
     make bbl && \
-    riscv64-unknown-linux-gnu-objcopy -O binary bbl ${BUILD_BASE}/artifacts/linux-${KERNEL_VERSION}.bin && \
+    riscv64-cartesi-linux-gnu-objcopy -O binary bbl ${BUILD_BASE}/artifacts/linux-${KERNEL_VERSION}.bin && \
     truncate -s %4096 ${BUILD_BASE}/artifacts/linux-${KERNEL_VERSION}.bin
 
 USER root
