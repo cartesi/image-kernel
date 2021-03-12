@@ -68,7 +68,7 @@ run-as-root:
 		$(IMG) $(CONTAINER_COMMAND)
 
 config: CONTAINER_COMMAND := $(CONTAINER_BASE)/scripts/update-linux-config
-config: run-as-root cartesi-linux-config
+config: cartesi-linux-config run-as-root
 
 copy:
 	ID=`docker create $(IMG)` && docker cp $$ID:$(LINUX_KERNEL) . && docker cp $$ID:$(LINUX_HEADERS) . && docker rm -v $$ID
