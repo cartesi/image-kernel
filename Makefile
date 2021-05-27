@@ -19,6 +19,10 @@ KERNEL_VERSION ?= 5.5.19-ctsi-2
 RISCV_PK_VERSION ?= 1.0.0-ctsi-1
 KERNEL_CONFIG ?= configs/default-linux-config
 
+ifeq ($(fd_emulation),yes)
+KERNEL_CONFIG = configs/lp64d-linux-config
+endif
+
 CONTAINER_BASE := /opt/cartesi/image-linux-kernel
 
 IMG ?= cartesi/linux-kernel:$(TAG)
