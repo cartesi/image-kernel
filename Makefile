@@ -14,7 +14,7 @@
 .PHONY: all build push run pull share copy clean clean-config
 
 TAG ?= devel
-TOOLCHAIN_TAG ?= 0.5.0
+TOOLCHAIN_TAG ?= 0.6.0
 KERNEL_VERSION ?= 5.5.19-ctsi-2
 RISCV_PK_VERSION ?= 1.0.0-ctsi-1
 KERNEL_CONFIG ?= configs/default-linux-config

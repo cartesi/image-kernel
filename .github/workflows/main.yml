@@ -41,7 +41,7 @@ jobs:
           push: false
           load: true
           build-args: |
-            TOOLCHAIN_VERSION=0.5.0
+            TOOLCHAIN_VERSION=0.6.0
 
       - name: Export linux.bin artifact
         run: make copy IMG=`echo "${{ steps.docker_meta.outputs.tags }}" | cut -d "," -f 1 | xargs`
@@ -66,4 +66,4 @@ jobs:
           push: true
           load: false
           build-args: |
-            TOOLCHAIN_VERSION=0.5.0
+            TOOLCHAIN_VERSION=0.6.0
