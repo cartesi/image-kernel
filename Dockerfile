@@ -11,8 +11,9 @@
 # the License.
 #
 
+ARG TOOLCHAIN_REPOSITORY=cartesi/toolchain
 ARG TOOLCHAIN_VERSION=latest
-FROM cartesi/toolchain:${TOOLCHAIN_VERSION}
+FROM ${TOOLCHAIN_REPOSITORY}:${TOOLCHAIN_VERSION}
 
 LABEL maintainer="Diego Nehab <diego@cartesi.io>"
 

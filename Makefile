@@ -14,6 +14,7 @@
 .PHONY: all build push run pull share copy clean clean-config
 
 TAG ?= devel
+TOOLCHAIN_DOCKER_REPOSITORY ?= cartesi/toolchain
 TOOLCHAIN_TAG ?= 0.6.0
 KERNEL_VERSION ?= 5.5.19-ctsi-2
 RISCV_PK_VERSION ?= 1.0.0-ctsi-1
@@ -31,6 +32,10 @@ LINUX_KERNEL:=$(BASE)/kernel/artifacts/linux-${KERNEL_VERSION}.bin
 LINUX_HEADERS:=$(BASE)/kernel/artifacts/linux-headers-${KERNEL_VERSION}.tar.xz
 
 BUILD_ARGS :=
+
+ifneq ($(TOOLCHAIN_DOCKER_REPOSITORY),)
+BUILD_ARGS += --build-arg TOOLCHAIN_REPOSITORY=$(TOOLCHAIN_DOCKER_REPOSITORY)
+endif
 
 ifneq ($(TOOLCHAIN_TAG),)
 BUILD_ARGS += --build-arg TOOLCHAIN_VERSION=$(TOOLCHAIN_TAG)

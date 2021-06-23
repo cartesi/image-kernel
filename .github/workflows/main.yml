@@ -42,6 +42,7 @@ jobs:
           push: false
           load: true
           build-args: |
+            TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
             TOOLCHAIN_VERSION=0.6.0
 
       - name: Export linux.bin artifact
@@ -67,6 +68,7 @@ jobs:
           push: true
           load: false
           build-args: |
+            TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
             TOOLCHAIN_VERSION=0.6.0
 
   build-fd-emulation:
@@ -113,6 +115,7 @@ jobs:
           push: false
           load: true
           build-args: |
+            TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
             TOOLCHAIN_VERSION=0.6.0
 
       - name: Export linux.bin artifact
@@ -141,4 +144,5 @@ jobs:
           push: true
           load: false
           build-args: |
+            TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
             TOOLCHAIN_VERSION=0.6.0
