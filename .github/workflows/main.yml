@@ -43,7 +43,7 @@ jobs:
           load: true
           build-args: |
             TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=0.6.0
+            TOOLCHAIN_VERSION=0.7.0
 
       - name: Export linux.bin artifact
         run: make copy IMG=`echo "${{ steps.docker_meta.outputs.tags }}" | head -1 | cut -d "," -f 1 | xargs`
@@ -52,7 +52,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         with:
           prerelease: true
-          files: linux-5.5.19-ctsi-2.bin
+          files: linux-5.5.19-ctsi-3.bin
         env:
           GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
 
@@ -69,7 +69,7 @@ jobs:
           load: false
           build-args: |
             TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=0.6.0
+            TOOLCHAIN_VERSION=0.7.0
 
   build-fd-emulation:
     runs-on: ubuntu-20.04
@@ -116,19 +116,19 @@ jobs:
           load: true
           build-args: |
             TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=0.6.0
+            TOOLCHAIN_VERSION=0.7.0
 
       - name: Export linux.bin artifact
         run: make copy IMG=`echo "${{ steps.docker_meta.outputs.tags }}" | head -1 | cut -d "," -f 1 | xargs`
 
       - name: Rename binary
-        run: mv linux-5.5.19-ctsi-2.bin linux-5.5.19-ctsi-2-fd-emulation.bin
+        run: mv linux-5.5.19-ctsi-3.bin linux-5.5.19-ctsi-3-fd-emulation.bin
 
       - uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/v')
         with:
           prerelease: true
-          files: linux-5.5.19-ctsi-2-fd-emulation.bin
+          files: linux-5.5.19-ctsi-3-fd-emulation.bin
         env:
           GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
 
@@ -145,4 +145,4 @@ jobs:
           load: false
           build-args: |
             TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=0.6.0
+            TOOLCHAIN_VERSION=0.7.0
