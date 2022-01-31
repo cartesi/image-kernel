@@ -29,6 +29,7 @@ CONTAINER_BASE := /opt/cartesi/image-linux-kernel
 IMG ?= cartesi/linux-kernel:$(TAG)
 BASE:=/opt/riscv
 LINUX_KERNEL:=$(BASE)/kernel/artifacts/linux-${KERNEL_VERSION}.bin
+LINUX_IMAGE:=$(BASE)/kernel/linux-${KERNEL_VERSION}/arch/riscv/boot/Image
 LINUX_HEADERS:=$(BASE)/kernel/artifacts/linux-headers-${KERNEL_VERSION}.tar.xz
 
 BUILD_ARGS :=
@@ -80,7 +81,7 @@ config: CONTAINER_COMMAND := $(CONTAINER_BASE)/scripts/update-linux-config
 config: cartesi-linux-config run-as-root
 
 copy:
-	ID=`docker create $(IMG)` && docker cp $$ID:$(LINUX_KERNEL) . && docker cp $$ID:$(LINUX_HEADERS) . && docker rm -v $$ID
+	ID=`docker create $(IMG)` && docker cp $$ID:$(LINUX_KERNEL) . && docker cp $$ID:$(LINUX_IMAGE) . && docker cp $$ID:$(LINUX_HEADERS) . && docker rm -v $$ID
 
 cartesi-linux-config:
 	cp $(KERNEL_CONFIG) ./cartesi-linux-config
