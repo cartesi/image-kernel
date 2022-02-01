@@ -1084,7 +1084,7 @@ CONFIG_RISCV_TIMER=y
 #
 CONFIG_IRQCHIP=y
 # CONFIG_AL_FIC is not set
-CONFIG_SIFIVE_PLIC=y
+# CONFIG_SIFIVE_PLIC is not set
 # end of IRQ chip support
 
 # CONFIG_IPACK_BUS is not set
