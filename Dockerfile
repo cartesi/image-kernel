@@ -17,7 +17,7 @@ FROM ${TOOLCHAIN_REPOSITORY}:${TOOLCHAIN_VERSION}
 
 LABEL maintainer="Diego Nehab <diego@cartesi.io>"
 
-ARG KERNEL_VERSION=5.5.19-ctsi-3
+ARG KERNEL_VERSION=5.5.19-ctsi-4
 ARG RISCV_PK_VERSION=1.0.0-ctsi-1
 
 ENV DEBIAN_FRONTEND=noninteractive
