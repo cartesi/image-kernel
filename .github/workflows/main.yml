@@ -43,7 +43,7 @@ jobs:
           load: true
           build-args: |
             TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=0.7.0
+            TOOLCHAIN_VERSION=0.8.0
 
       - name: Export linux.bin artifact
         run: make copy IMG=`echo "${{ steps.docker_meta.outputs.tags }}" | head -1 | cut -d "," -f 1 | xargs`
@@ -69,7 +69,7 @@ jobs:
           load: false
           build-args: |
             TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=0.7.0
+            TOOLCHAIN_VERSION=0.8.0
 
   build-fd-emulation:
     runs-on: ubuntu-20.04
@@ -116,7 +116,7 @@ jobs:
           load: true
           build-args: |
             TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=0.7.0
+            TOOLCHAIN_VERSION=0.8.0
 
       - name: Export linux.bin artifact
         run: make copy IMG=`echo "${{ steps.docker_meta.outputs.tags }}" | head -1 | cut -d "," -f 1 | xargs`
@@ -149,4 +149,4 @@ jobs:
           load: false
           build-args: |
             TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=0.7.0
+            TOOLCHAIN_VERSION=0.8.0
