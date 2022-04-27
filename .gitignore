@@ -1,3 +1,5 @@
-linux*.bin
-linux*.tar.xz
+linux-*.bin
+linux-nobbl-*.bin
+linux-headers-*.tar.xz
+linux-selftest-*.ext2
 cartesi-linux-config

@@ -25,6 +25,23 @@ $ make build TAG=mytag
 
 To remove the generated images from your system, please refer to the Docker documentation.
 
+#### Development
+
+There is a separate `build.mk` Makefile that can be used for kernel for development.
+
+```bash
+$ make -f build.mk clone
+$ make -f build.mk run
+$ make -f build.mk
+```
+
+There is also a `run-selftest` target to run the kernel tests.
+To use it, start a `remote-cartesi-machine` process from the emulator repository, then run:
+
+```bash
+$ make -f build.mk run-selftest
+```
+
 #### Makefile targets
 
 The following options are available as `make` targets:

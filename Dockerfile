@@ -26,53 +26,34 @@ ENV OLDPATH=$PATH
 
 ENV BUILD_BASE=$BASE/kernel
 
-# Build linux kernel
-# ----------------------------------------------------
-
+# setup dirs
+# ------------------------------------------------------------------------------
 RUN \
-    mkdir -p $BUILD_BASE/artifacts
+  mkdir -p ${BUILD_BASE}/artifacts && \
+  chown -R developer:developer ${BUILD_BASE} && \
+  chmod go+w ${BUILD_BASE}
 
-RUN \
-    chown -R developer:developer $BUILD_BASE && \
-    chmod go+w $BUILD_BASE
-
+WORKDIR ${BUILD_BASE}
 USER developer
 
-RUN \
-    cd ${BUILD_BASE} && \
-    wget -O linux-${KERNEL_VERSION}.tar.gz https://github.com/cartesi/linux/archive/v${KERNEL_VERSION}.tar.gz && \
-    tar -zxvf linux-${KERNEL_VERSION}.tar.gz && \
-    rm -f linux-${KERNEL_VERSION}.tar.gz
+# copy kernel
+# ------------------------------------------------------------------------------
+COPY --chown=developer:developer dep/linux-${KERNEL_VERSION}.tar.gz ${BUILD_BASE}/dep/
+RUN tar xzf ${BUILD_BASE}/dep/linux-${KERNEL_VERSION}.tar.gz \
+  --strip-components=1 --one-top-level=${BUILD_BASE}/work/linux && \
+  rm ${BUILD_BASE}/dep/linux-${KERNEL_VERSION}.tar.gz
 
-COPY cartesi-linux-config $BUILD_BASE/linux-${KERNEL_VERSION}/cartesi-linux-config
+# copy riscv-pk
+# ------------------------------------------------------------------------------
+COPY --chown=developer:developer dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz ${BUILD_BASE}/dep/
+RUN tar xzf ${BUILD_BASE}/dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz \
+  --strip-components=1 --one-top-level=${BUILD_BASE}/work/riscv-pk && \
+  rm ${BUILD_BASE}/dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz
 
-RUN \
-    cd ${BUILD_BASE}/linux-${KERNEL_VERSION} && \
-    cp cartesi-linux-config .config && \
-    make ARCH=riscv CROSS_COMPILE=riscv64-cartesi-linux-gnu- olddefconfig && \
-    make ARCH=riscv CROSS_COMPILE=riscv64-cartesi-linux-gnu- -j$(nproc) vmlinux Image && \
-    make ARCH=riscv CROSS_COMPILE=riscv64-cartesi-linux-gnu- INSTALL_HDR_PATH=/opt/riscv/kernel/linux-headers-${KERNEL_VERSION} headers_install && \
-    cd ${BUILD_BASE} && \
-    tar -cJf artifacts/linux-headers-${KERNEL_VERSION}.tar.xz linux-headers-${KERNEL_VERSION}
+COPY cartesi-linux-config ${BUILD_BASE}/work/linux/.config
 
-# Build riscv-pk and link with kernel
-# ----------------------------------------------------
-RUN \
-    cd ${BUILD_BASE} && \
-    wget -O riscv-pk-${RISCV_PK_VERSION}.tar.gz https://github.com/cartesi/riscv-pk/archive/v${RISCV_PK_VERSION}.tar.gz && \
-    tar -zxvf riscv-pk-${RISCV_PK_VERSION}.tar.gz && \
-    rm -f riscv-pk-${RISCV_PK_VERSION}.tar.gz
-
-RUN \
-    cd ${BUILD_BASE}/riscv-pk-${RISCV_PK_VERSION} && \
-    mkdir build && \
-    cd build && \
-    ../configure \
-        --with-payload=${BUILD_BASE}/linux-${KERNEL_VERSION}/vmlinux \
-        --host=riscv64-cartesi-linux-gnu && \
-    make bbl && \
-    riscv64-cartesi-linux-gnu-objcopy -O binary bbl ${BUILD_BASE}/artifacts/linux-${KERNEL_VERSION}.bin && \
-    truncate -s %4096 ${BUILD_BASE}/artifacts/linux-${KERNEL_VERSION}.bin
+COPY build.mk build.mk
+RUN make -f build.mk
 
 USER root
 
