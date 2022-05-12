@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Remove cartesi-logo.txt from bbl
+
 ## [0.11.0] - 2022-04-20
 ### Changed
 - Updated Linux Kernel to v5.5.19-ctsi-5

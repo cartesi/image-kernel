@@ -63,17 +63,13 @@ RUN \
     tar -zxvf riscv-pk-${RISCV_PK_VERSION}.tar.gz && \
     rm -f riscv-pk-${RISCV_PK_VERSION}.tar.gz
 
-COPY cartesi-logo.txt ${BUILD_BASE}/riscv-pk-${RISCV_PK_VERSION}/cartesi-logo.txt
-
 RUN \
     cd ${BUILD_BASE}/riscv-pk-${RISCV_PK_VERSION} && \
     mkdir build && \
     cd build && \
     ../configure \
- 		--with-payload=${BUILD_BASE}/linux-${KERNEL_VERSION}/vmlinux \
- 		--host=riscv64-cartesi-linux-gnu \
- 		--with-logo=${BUILD_BASE}/riscv-pk-${RISCV_PK_VERSION}/cartesi-logo.txt \
- 		--enable-logo && \
+        --with-payload=${BUILD_BASE}/linux-${KERNEL_VERSION}/vmlinux \
+        --host=riscv64-cartesi-linux-gnu && \
     make bbl && \
     riscv64-cartesi-linux-gnu-objcopy -O binary bbl ${BUILD_BASE}/artifacts/linux-${KERNEL_VERSION}.bin && \
     truncate -s %4096 ${BUILD_BASE}/artifacts/linux-${KERNEL_VERSION}.bin
