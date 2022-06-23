@@ -3,6 +3,7 @@ on: [push]
 env:
   KERNEL_VERSION: 5.5.19-ctsi-5
   RISCV_PK_VERSION: 1.0.0-ctsi-1
+  TOOLCHAIN_VERSION: 0.10.0
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -58,7 +59,7 @@ jobs:
           load: true
           build-args: |
             TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=0.9.0
+            TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
 
@@ -90,7 +91,9 @@ jobs:
           load: false
           build-args: |
             TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=0.9.0
+            TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
+            KERNEL_VERSION=${{ env.KERNEL_VERSION }}
+            RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
 
   build-fd-emulation:
     runs-on: ubuntu-22.04
@@ -149,7 +152,7 @@ jobs:
           load: true
           build-args: |
             TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=0.9.0
+            TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
 
@@ -192,4 +195,6 @@ jobs:
           load: false
           build-args: |
             TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=0.9.0
+            TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
+            KERNEL_VERSION=${{ env.KERNEL_VERSION }}
+            RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
