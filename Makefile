@@ -89,7 +89,7 @@ copy:
 	   docker cp $$ID:$(HEADERS) linux-headers-$(KERNEL_VERSION).tar.xz && \
 	   docker cp $$ID:$(IMAGE)   linux-nobbl-$(KERNEL_VERSION).bin && \
 	   docker cp $$ID:$(KERNEL)  linux-$(KERNEL_VERSION).bin  && \
-	   docker cp $$ID:$(TESTS)   linux-selftest-$(KERNEL_VERSION).ext2; \
+	   docker cp $$ID:$(TESTS)   linux-selftest-$(KERNEL_VERSION).ext2 && \
 	   docker rm -v $$ID
 
 cartesi-linux-config:

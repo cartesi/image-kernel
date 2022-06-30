@@ -70,7 +70,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         with:
           prerelease: true
-          files: >
+          files: |
             linux-headers-${{ env.KERNEL_VERSION }}.tar.xz
             linux-nobbl-${{ env.KERNEL_VERSION }}.bin
             linux-${{ env.KERNEL_VERSION }}.bin
@@ -172,7 +172,7 @@ jobs:
         # if: startsWith(github.ref, 'refs/tags/v')
         with:
           prerelease: true
-          files: >
+          files: |
             linux-headers-${{ env.KERNEL_VERSION }}.tar.xz
             linux-nobbl-${{ env.KERNEL_VERSION }}.bin
             linux-${{ env.KERNEL_VERSION }}.bin
