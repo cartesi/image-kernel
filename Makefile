@@ -30,11 +30,11 @@ CONTAINER_BASE := /opt/cartesi/kernel
 
 IMG ?= cartesi/linux-kernel:$(TAG)
 BASE:=/opt/riscv
-KERNEL:=$(BASE)/kernel/artifacts/linux.bin
-IMAGE:=$(BASE)/kernel/artifacts/image.bin
-HEADERS:=$(BASE)/kernel/artifacts/linux-headers.tar.xz
-TESTS:=$(BASE)/kernel/artifacts/selftest.ext2
 
+HEADERS  := $(BASE)/kernel/artifacts/linux-headers-$(KERNEL_VERSION).tar.xz
+IMAGE    := $(BASE)/kernel/artifacts/linux-nobbl-$(KERNEL_VERSION).bin
+LINUX    := $(BASE)/kernel/artifacts/linux-$(KERNEL_VERSION).bin
+SELFTEST := $(BASE)/kernel/artifacts/linux-selftest-$(KERNEL_VERSION).ext2
 
 BUILD_ARGS :=
 
@@ -86,10 +86,10 @@ config: cartesi-linux-config run-as-root
 
 copy:
 	ID=`docker create $(IMG)` && \
-	   docker cp $$ID:$(HEADERS) linux-headers-$(KERNEL_VERSION).tar.xz && \
-	   docker cp $$ID:$(IMAGE)   linux-nobbl-$(KERNEL_VERSION).bin && \
-	   docker cp $$ID:$(KERNEL)  linux-$(KERNEL_VERSION).bin  && \
-	   docker cp $$ID:$(TESTS)   linux-selftest-$(KERNEL_VERSION).ext2 && \
+	   docker cp $$ID:$(HEADERS)  . && \
+	   docker cp $$ID:$(IMAGE)    . && \
+	   docker cp $$ID:$(LINUX)    . && \
+	   docker cp $$ID:$(SELFTEST) . && \
 	   docker rm -v $$ID
 
 cartesi-linux-config:
@@ -99,11 +99,7 @@ clean-config:
 	rm -f ./cartesi-linux-config
 
 clean: clean-config
-	rm -f \
-		linux-headers-$(KERNEL_VERSION).tar.xz \
-		linux-nobbl-$(KERNEL_VERSION).bin \
-		linux-$(KERNEL_VERSION).bin \
-		linux-selftest-$(KERNEL_VERSION).ext2
+	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(SELFTEST)
 
 depclean: clean
 	rm -f \

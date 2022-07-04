@@ -8,10 +8,11 @@ LINUX_TEST_DIR      := $(LINUX_DIR)/tools/testing/selftests
 
 JOBS                := -j$(shell nproc)
 
-HEADERS             := artifacts/linux-headers.tar.xz
-IMAGE               := artifacts/image.bin
-LINUX               := artifacts/linux.bin
-SELFTEST            := artifacts/selftest.ext2
+KERNEL_VERSION      ?= 5.5.19-ctsi-5
+HEADERS             := artifacts/linux-headers-$(KERNEL_VERSION).tar.xz
+IMAGE               := artifacts/linux-nobbl-$(KERNEL_VERSION).bin
+LINUX               := artifacts/linux-$(KERNEL_VERSION).bin
+SELFTEST            := artifacts/linux-selftest-$(KERNEL_VERSION).ext2
 ARTIFACTS           := $(HEADERS) $(IMAGE) $(LINUX) $(SELFTEST)
 
 all: $(ARTIFACTS)
