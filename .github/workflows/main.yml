@@ -62,6 +62,8 @@ jobs:
             TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
+          cache-from: type=gha,mode=xmax,scope=regular
+          cache-to: type=gha,scope=regular
 
       - name: Export linux.bin artifact
         run: make copy IMG=`echo "${{ steps.docker_meta.outputs.tags }}" | head -1 | cut -d "," -f 1 | xargs`
@@ -94,6 +96,8 @@ jobs:
             TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
+          cache-from: type=gha,mode=max,scope=regular
+          cache-to: type=gha,scope=regular
 
   build-fd-emulation:
     runs-on: ubuntu-22.04
@@ -155,6 +159,8 @@ jobs:
             TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
+          cache-from: type=gha,mode=xmax,scope=regular
+          cache-to: type=gha,scope=regular
 
       - name: Export linux.bin artifact
         run: make copy IMG=`echo "${{ steps.docker_meta.outputs.tags }}" | head -1 | cut -d "," -f 1 | xargs`
@@ -198,3 +204,5 @@ jobs:
             TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
+          cache-from: type=gha,mode=xmax,scope=regular
+          cache-to: type=gha,scope=regular
