@@ -8,7 +8,7 @@ LINUX_TEST_DIR      := $(LINUX_DIR)/tools/testing/selftests
 
 JOBS                := -j$(shell nproc)
 
-KERNEL_VERSION      ?= 5.5.19-ctsi-5
+KERNEL_VERSION      ?= 5.5.19-ctsi-6
 HEADERS             := artifacts/linux-headers-$(KERNEL_VERSION).tar.xz
 IMAGE               := artifacts/linux-nobbl-$(KERNEL_VERSION).bin
 LINUX               := artifacts/linux-$(KERNEL_VERSION).bin
@@ -81,7 +81,8 @@ clone:
 		git@github.com:cartesi-corp/riscv-pk.git $(RISCV_PK_DIR) || \
 		cd $(RISCV_PK_DIR) && git pull
 
+run: IMG=cartesi/toolchain:devel
 run:
-	$(MAKE) run IMG=cartesi/toolchain:devel
+	$(MAKE) run IMG=$(IMG)
 
 .PHONY: $(RISCV_PK_BUILD_DIR)/Makefile $(LINUX_DIR)/vmlinux $(ARTIFACTS)

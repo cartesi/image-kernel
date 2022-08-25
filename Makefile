@@ -16,7 +16,7 @@
 TAG ?= devel
 TOOLCHAIN_DOCKER_REPOSITORY ?= cartesi/toolchain
 TOOLCHAIN_TAG ?= 0.10.0
-KERNEL_VERSION ?= 5.5.19-ctsi-5
+KERNEL_VERSION ?= 5.5.19-ctsi-6
 KERNEL_SRCPATH := dep/linux-${KERNEL_VERSION}.tar.gz
 RISCV_PK_VERSION ?= 1.0.0-ctsi-1
 RISCV_PK_SRCPATH := dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz
@@ -110,7 +110,7 @@ dep:
 
 $(KERNEL_SRCPATH): dep
 	wget -O $@ https://github.com/cartesi/linux/archive/v${KERNEL_VERSION}.tar.gz
-	echo "4266d1c3d56f79088d9328521bcdb5ad9c385cd9ea8f28457cc61658f43092f4  $@" | shasum -ca 256 || exit 1
+	echo "c665a5eb0ac12ad457fc7cab74cb98570f0ce158942baad8923d4d3e36beda5b  $@" | shasum -ca 256 || exit 1
 
 $(RISCV_PK_SRCPATH): dep
 	wget -O $@ https://github.com/cartesi/riscv-pk/archive/v${RISCV_PK_VERSION}.tar.gz
