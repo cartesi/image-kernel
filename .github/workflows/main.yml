@@ -3,7 +3,7 @@ on: [push]
 env:
   KERNEL_VERSION: 5.5.19-ctsi-6
   RISCV_PK_VERSION: 1.0.0-ctsi-1
-  TOOLCHAIN_VERSION: 0.10.0
+  TOOLCHAIN_VERSION: 0.11.0
 jobs:
   build:
     runs-on: ubuntu-22.04

@@ -6,10 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.13.0] - 2022-08-25
+## [0.13.0] - 2022-08-29
 ### Changed
 - Added cache to docker build and push on CI
 - Updated Linux Kernel to v5.5.19-ctsi-6
+- Updated toolchain version to v0.11.0
 
 ## [0.12.0] - 2022-07-04
 ### Changed
