@@ -1,7 +1,7 @@
 name: Build
 on: [push]
 env:
-  KERNEL_VERSION: 5.5.19-ctsi-6
+  KERNEL_VERSION: 5.15.63-ctsi-1
   RISCV_PK_VERSION: 1.0.0-ctsi-1
   TOOLCHAIN_VERSION: 0.11.0
 jobs:

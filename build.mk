@@ -8,7 +8,7 @@ LINUX_TEST_DIR      := $(LINUX_DIR)/tools/testing/selftests
 
 JOBS                := -j$(shell nproc)
 
-KERNEL_VERSION      ?= 5.5.19-ctsi-6
+KERNEL_VERSION      ?= $(shell make -sC $(LINUX_DIR) kernelversion)
 HEADERS             := artifacts/linux-headers-$(KERNEL_VERSION).tar.xz
 IMAGE               := artifacts/linux-nobbl-$(KERNEL_VERSION).bin
 LINUX               := artifacts/linux-$(KERNEL_VERSION).bin
@@ -57,7 +57,7 @@ $(SELFTEST):
 	genext2fs -i 4096 -b 1024 -UPd $(LINUX_TEST_DIR)/kselftest_install $@
 
 clean:
-	$(MAKE) $(LINUX_ARGS) clean
+	$(MAKE) -rC $(LINUX_DIR) $(LINUX_OPTS) clean
 	$(MAKE) $(JOBS) -rC $(RISCV_PK_BUILD_DIR) clean
 
 run-selftest:

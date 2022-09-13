@@ -16,7 +16,7 @@
 TAG ?= devel
 TOOLCHAIN_DOCKER_REPOSITORY ?= cartesi/toolchain
 TOOLCHAIN_TAG ?= 0.11.0
-KERNEL_VERSION ?= 5.5.19-ctsi-6
+KERNEL_VERSION ?= 5.15.63-ctsi-1
 KERNEL_SRCPATH := dep/linux-${KERNEL_VERSION}.tar.gz
 RISCV_PK_VERSION ?= 1.0.0-ctsi-1
 RISCV_PK_SRCPATH := dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz
@@ -105,13 +105,13 @@ depclean: clean
 	rm -f \
 		$(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
 
-dep:
-	mkdir dep
+checksum: $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
+	shasum -ca 256 shasumfile
 
+$(KERNEL_SRCPATH): URL=https://github.com/cartesi/linux/archive/v${KERNEL_VERSION}.tar.gz
 $(KERNEL_SRCPATH): dep
-	wget -O $@ https://github.com/cartesi/linux/archive/v${KERNEL_VERSION}.tar.gz
-	echo "c665a5eb0ac12ad457fc7cab74cb98570f0ce158942baad8923d4d3e36beda5b  $@" | shasum -ca 256 || exit 1
+	T=`mktemp` && wget "$(URL)" -O $$T && mv $$T $@ || rm $$T
 
+$(RISCV_PK_SRCPATH): URL=https://github.com/cartesi/riscv-pk/archive/v${RISCV_PK_VERSION}.tar.gz
 $(RISCV_PK_SRCPATH): dep
-	wget -O $@ https://github.com/cartesi/riscv-pk/archive/v${RISCV_PK_VERSION}.tar.gz
-	echo "9a873345b9914940e7bf03a167da823910c8a2acadd818b780ffbd1a3edcc4c5  $@" | shasum -ca 256 || exit 1
+	T=`mktemp` && wget "$(URL)" -O $$T && mv $$T $@ || rm $$T
