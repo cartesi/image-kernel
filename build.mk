@@ -50,11 +50,15 @@ $(LINUX): $(RISCV_PK_DIR)/build/Makefile $(LINUX_DIR)/vmlinux
 
 # build linux tests
 # ------------------------------------------------------------------------------
+TAR := $(shell mktemp)
+
 $(SELFTEST):
 	mkdir -p artifacts
 	$(MAKE) $(JOBS) -rC $(LINUX_TEST_DIR) $(LINUX_OPTS) \
 		TARGETS=drivers/cartesi install
-	genext2fs -i 4096 -b 1024 -UPd $(LINUX_TEST_DIR)/kselftest_install $@
+	tar --sort=name --mtime="2022-01-01" --owner=1000 --group=1000 --numeric-owner -cf $(TAR) --directory=$(LINUX_TEST_DIR)/kselftest_install .
+	genext2fs -i 4096 -b 1024 -a $(TAR) $@
+	rm $(TAR)
 
 clean:
 	$(MAKE) -rC $(LINUX_DIR) $(LINUX_OPTS) clean
