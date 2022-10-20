@@ -29,6 +29,10 @@ $(LINUX_DIR)/vmlinux $(IMAGE) $(HEADERS) &: $(LINUX_DIR)/.config
 	tar cJf $(HEADERS) $(abspath work/linux-headers)
 	cp work/linux/arch/riscv/boot/Image $(IMAGE)
 
+env:
+	@echo export ARCH=riscv
+	@echo export CROSS_COMPILE=$(TOOLCHAIN_PREFIX)-
+
 # configure riscv-pk
 # ------------------------------------------------------------------------------
 $(RISCV_PK_BUILD_DIR)/Makefile: $(LINUX_DIR)/vmlinux $(LINUX_DIR)/.config
@@ -69,8 +73,8 @@ run-selftest:
 		--append-rom-bootargs=debug \
 		--remote-address=localhost:5001 \
 		--checkin-address=localhost:5002 \
-		--ram-image=$(LINUX) \
-		--flash-drive=label:selftest,filename:$(SELFTEST) \
+		--ram-image=`realpath $(LINUX)` \
+		--flash-drive=label:selftest,filename:`realpath $(SELFTEST)` \
 		-- $(CMD)
 
 # clone (for non CI environment)

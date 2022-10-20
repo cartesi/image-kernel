@@ -11,7 +11,7 @@
 # the License.
 #
 
-.PHONY: all build push run pull share copy clean clean-config
+.PHONY: all build push run pull share copy clean clean-config checksum
 
 TAG ?= devel
 TOOLCHAIN_DOCKER_REPOSITORY ?= cartesi/toolchain
@@ -57,7 +57,7 @@ endif
 .NOTPARALLEL: all
 all: build copy
 
-build: cartesi-linux-config $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
+build: cartesi-linux-config checksum
 	docker build -t $(IMG) $(BUILD_ARGS) .
 
 push:
@@ -108,6 +108,8 @@ depclean: clean
 checksum: $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
 	shasum -ca 256 shasumfile
 
+dep:
+	mkdir dep
 $(KERNEL_SRCPATH): URL=https://github.com/cartesi/linux/archive/v${KERNEL_VERSION}.tar.gz
 $(KERNEL_SRCPATH): dep
 	T=`mktemp` && wget "$(URL)" -O $$T && mv $$T $@ || rm $$T
