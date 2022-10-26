@@ -3,3 +3,4 @@ linux-nobbl-*.bin
 linux-headers-*.tar.xz
 linux-selftest-*.ext2
 cartesi-linux-config
+dep
