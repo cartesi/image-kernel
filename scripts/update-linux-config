@@ -9,7 +9,7 @@ if [ ! -d "$LOCAL_VOLUME_MOUNT" ]; then
 fi
 
 # Discover linux source directory on this image
-LINUX_DIR=$(find ${BUILD_BASE} -maxdepth 1 -regex ".*linux-[0-9.]*-ctsi-.*" -type d)
+LINUX_DIR=${BUILD_BASE}/work/linux
 if [ ! -d "$LINUX_DIR" ]; then
     echo "Linux source not found at: " ${BUILD_BASE}
 fi
