@@ -39,8 +39,7 @@ $(RISCV_PK_BUILD_DIR)/Makefile: $(LINUX_DIR)/vmlinux $(LINUX_DIR)/.config
 	@mkdir -p $(RISCV_PK_BUILD_DIR)
 	cd $(RISCV_PK_BUILD_DIR) && ../configure \
 		--with-payload=$(abspath $<) \
-		`awk '/CONFIG_FPU/ {printf("--%s-fp-emulation", NF == 1? "enable": "disable")}' \
-			$(abspath $(LINUX_DIR)/.config)` \
+		--disable-fp-emulation \
 		--host=$(TOOLCHAIN_PREFIX)
 
 # build linux w/ bbl

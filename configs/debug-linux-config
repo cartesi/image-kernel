@@ -211,7 +211,7 @@ CONFIG_TUNE_GENERIC=y
 CONFIG_RISCV_BASE_PMU=y
 # end of supported PMU type
 
-# CONFIG_FPU is not set
+CONFIG_FPU=y
 # end of Platform type
 
 #

@@ -3,7 +3,7 @@ on: [push]
 env:
   KERNEL_VERSION: 5.15.63-ctsi-1
   RISCV_PK_VERSION: 1.0.0-ctsi-1
-  TOOLCHAIN_VERSION: 0.11.0
+  TOOLCHAIN_VERSION: 0.12.0
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -97,112 +97,4 @@ jobs:
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
           cache-from: type=gha,mode=max,scope=regular
-          cache-to: type=gha,scope=regular
-
-  build-fd-emulation:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Copy default Cartesi Linux config
-        run: make cartesi-linux-config fd_emulation=yes
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Docker meta
-        id: docker_meta
-        uses: docker/metadata-action@v3
-        with:
-          images: ${{ secrets.DOCKER_ORGANIZATION }}/linux-kernel
-          flavor: |
-            latest=false
-            suffix=-fd-emulation
-          tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Download linux
-        run: >
-          gh release download -D dep/ -R ${{ github.repository_owner }}/linux v${{ env.KERNEL_VERSION }} --archive=tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
-
-      - name: Download riscv-pk
-        run: >
-          gh release download -D dep/ -R ${{ github.repository_owner }}/riscv-pk v${{ env.RISCV_PK_VERSION }} --archive=tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
-
-      - name: Build docker image
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          builder: ${{ steps.buildx.outputs.name }}
-          platforms: linux/amd64
-          tags: ${{ steps.docker_meta.outputs.tags }}
-          push: false
-          load: true
-          build-args: |
-            TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
-            KERNEL_VERSION=${{ env.KERNEL_VERSION }}
-            RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
-          cache-from: type=gha,mode=xmax,scope=regular
-          cache-to: type=gha,scope=regular
-
-      - name: Export linux.bin artifact
-        run: make copy IMG=`echo "${{ steps.docker_meta.outputs.tags }}" | head -1 | cut -d "," -f 1 | xargs`
-
-      - name: Rename artifacts
-        run: |
-          mv linux-headers-${{ env.KERNEL_VERSION }}.tar.xz linux-headers-fd-emulation-${{ env.KERNEL_VERSION }}.tar.xz
-          mv linux-nobbl-${{ env.KERNEL_VERSION }}.bin linux-nobbl-fd-emulation-${{ env.KERNEL_VERSION }}.bin
-          mv linux-${{ env.KERNEL_VERSION }}.bin linux-fd-emulation-${{ env.KERNEL_VERSION }}.bin
-          mv linux-selftest-${{ env.KERNEL_VERSION }}.ext2 linux-selftest-fd-emulation-${{ env.KERNEL_VERSION }}.ext2
-
-      - uses: softprops/action-gh-release@v1
-        if: false
-        # Do no publish fd emulation binaries
-        # if: startsWith(github.ref, 'refs/tags/v')
-        with:
-          prerelease: true
-          files: |
-            linux-headers-${{ env.KERNEL_VERSION }}.tar.xz
-            linux-nobbl-${{ env.KERNEL_VERSION }}.bin
-            linux-${{ env.KERNEL_VERSION }}.bin
-            linux-selftest-${{ env.KERNEL_VERSION }}.ext2
-        env:
-          GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
-
-      - name: Push docker image
-        id: docker_push
-        uses: docker/build-push-action@v2
-        if: false
-        # Do no push fd emulation images
-        # if: ${{ startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/develop') }}
-        with:
-          context: .
-          builder: ${{ steps.buildx.outputs.name }}
-          platforms: linux/amd64
-          tags: ${{ steps.docker_meta.outputs.tags }}
-          push: true
-          load: false
-          build-args: |
-            TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
-            KERNEL_VERSION=${{ env.KERNEL_VERSION }}
-            RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
-          cache-from: type=gha,mode=xmax,scope=regular
           cache-to: type=gha,scope=regular

@@ -15,16 +15,12 @@
 
 TAG ?= devel
 TOOLCHAIN_DOCKER_REPOSITORY ?= cartesi/toolchain
-TOOLCHAIN_TAG ?= 0.11.0
+TOOLCHAIN_TAG ?= 0.12.0
 KERNEL_VERSION ?= 5.15.63-ctsi-1
 KERNEL_SRCPATH := dep/linux-${KERNEL_VERSION}.tar.gz
 RISCV_PK_VERSION ?= 1.0.0-ctsi-1
 RISCV_PK_SRCPATH := dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz
 KERNEL_CONFIG ?= configs/default-linux-config
-
-ifeq ($(fd_emulation),yes)
-KERNEL_CONFIG = configs/lp64d-linux-config
-endif
 
 CONTAINER_BASE := /opt/cartesi/kernel
 
