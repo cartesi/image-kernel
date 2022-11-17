@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.14.0] - 2022-11-17
 ### Changed
 - Enabled floating-point unit by default
+- Updated Linux Kernel to v5.15.63-ctsi-1
 - Updated toolchain to v0.12.0
 
 ## [0.13.0] - 2022-08-29
