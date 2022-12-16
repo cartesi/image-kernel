@@ -1,3 +1,4 @@
+linux-*.elf
 linux-*.bin
 linux-nobbl-*.bin
 linux-headers-*.tar.xz

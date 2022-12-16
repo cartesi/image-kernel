@@ -30,6 +30,7 @@ BASE:=/opt/riscv
 HEADERS  := linux-headers-$(KERNEL_VERSION).tar.xz
 IMAGE    := linux-nobbl-$(KERNEL_VERSION).bin
 LINUX    := linux-$(KERNEL_VERSION).bin
+LINUX_ELF:= linux-$(KERNEL_VERSION).elf
 SELFTEST := linux-selftest-$(KERNEL_VERSION).ext2
 
 BUILD_ARGS :=
@@ -85,6 +86,7 @@ copy:
 	   docker cp $$ID:$(BASE)/kernel/artifacts/$(HEADERS)  . && \
 	   docker cp $$ID:$(BASE)/kernel/artifacts/$(IMAGE)    . && \
 	   docker cp $$ID:$(BASE)/kernel/artifacts/$(LINUX)    . && \
+	   docker cp $$ID:$(BASE)/kernel/artifacts/$(LINUX_ELF) . && \
 	   docker cp $$ID:$(BASE)/kernel/artifacts/$(SELFTEST) . && \
 	   docker rm -v $$ID
 
@@ -107,9 +109,9 @@ checksum: $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
 dep:
 	mkdir dep
 $(KERNEL_SRCPATH): URL=https://github.com/cartesi/linux/archive/v${KERNEL_VERSION}.tar.gz
-$(KERNEL_SRCPATH): dep
+$(KERNEL_SRCPATH): | dep
 	T=`mktemp` && wget "$(URL)" -O $$T && mv $$T $@ || rm $$T
 
 $(RISCV_PK_SRCPATH): URL=https://github.com/cartesi/riscv-pk/archive/v${RISCV_PK_VERSION}.tar.gz
-$(RISCV_PK_SRCPATH): dep
+$(RISCV_PK_SRCPATH): | dep
 	T=`mktemp` && wget "$(URL)" -O $$T && mv $$T $@ || rm $$T

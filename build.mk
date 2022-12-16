@@ -12,6 +12,7 @@ KERNEL_VERSION      ?= $(shell make -sC $(LINUX_DIR) kernelversion)
 HEADERS             := artifacts/linux-headers-$(KERNEL_VERSION).tar.xz
 IMAGE               := artifacts/linux-nobbl-$(KERNEL_VERSION).bin
 LINUX               := artifacts/linux-$(KERNEL_VERSION).bin
+LINUX_ELF           := artifacts/linux-$(KERNEL_VERSION).elf
 SELFTEST            := artifacts/linux-selftest-$(KERNEL_VERSION).ext2
 ARTIFACTS           := $(HEADERS) $(IMAGE) $(LINUX) $(SELFTEST)
 
@@ -28,6 +29,7 @@ $(LINUX_DIR)/vmlinux $(IMAGE) $(HEADERS) &: $(LINUX_DIR)/.config
 		INSTALL_HDR_PATH=$(abspath work/linux-headers)
 	tar cJf $(HEADERS) $(abspath work/linux-headers)
 	cp work/linux/arch/riscv/boot/Image $(IMAGE)
+	cp $(LINUX_DIR)/vmlinux $(LINUX_ELF)
 
 env:
 	@echo export ARCH=riscv
