@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Tuned default kernel config for faster boot time
+
 ## [0.14.0] - 2022-11-17
 ### Changed
 - Enabled floating-point unit by default
