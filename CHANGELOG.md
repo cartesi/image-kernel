@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Tuned default kernel config for faster boot time
+- Updated toolchain to v0.13.0
+- Enabled compressed instructions (RISC-V C extension)
 
 ## [0.14.0] - 2022-11-17
 ### Changed
