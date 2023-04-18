@@ -1,4 +1,4 @@
 artifacts/*
-linux-*.tar.gz
-riscv-pk-*.tar.gz
+dep/*
+*.tar.gz
 cartesi-linux-config
