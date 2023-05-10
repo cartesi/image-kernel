@@ -16,6 +16,7 @@
 TAG ?= devel
 TOOLCHAIN_DOCKER_REPOSITORY ?= cartesi/toolchain
 TOOLCHAIN_TAG ?= 0.13.0
+KERNEL_TIMESTAMP ?= $(shell date -Rud @$(shell git log -1 --format=%ct 2> /dev/null || date +%s))
 KERNEL_VERSION ?= 5.15.63-ctsi-2
 KERNEL_SRCPATH := dep/linux-${KERNEL_VERSION}.tar.gz
 RISCV_PK_VERSION ?= 1.0.0-ctsi-1
@@ -45,6 +46,10 @@ endif
 
 ifneq ($(KERNEL_VERSION),)
 BUILD_ARGS += --build-arg KERNEL_VERSION=$(KERNEL_VERSION)
+endif
+
+ifneq ($(KERNEL_TIMESTAMP),)
+BUILD_ARGS += --build-arg KERNEL_TIMESTAMP="$(KERNEL_TIMESTAMP)"
 endif
 
 ifneq ($(RISCV_PK_VERSION),)

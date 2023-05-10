@@ -9,6 +9,7 @@ LINUX_TEST_DIR      := $(LINUX_DIR)/tools/testing/selftests
 JOBS                := -j$(shell nproc)
 
 KERNEL_VERSION      ?= $(shell make -sC $(LINUX_DIR) kernelversion)
+KERNEL_TIMESTAMP    ?= $(shell date -Ru)
 HEADERS             := artifacts/linux-headers-$(KERNEL_VERSION).tar.xz
 IMAGE               := artifacts/linux-nobbl-$(KERNEL_VERSION).bin
 LINUX               := artifacts/linux-$(KERNEL_VERSION).bin
@@ -16,24 +17,28 @@ LINUX_ELF           := artifacts/linux-$(KERNEL_VERSION).elf
 SELFTEST            := artifacts/linux-selftest-$(KERNEL_VERSION).ext2
 ARTIFACTS           := $(HEADERS) $(IMAGE) $(LINUX) $(SELFTEST)
 
+
 all: $(ARTIFACTS)
 
 # build linux
 # ------------------------------------------------------------------------------
-LINUX_OPTS=$(JOBS) ARCH=riscv CROSS_COMPILE=$(TOOLCHAIN_PREFIX)-
+LINUX_OPTS=$(JOBS) ARCH=riscv CROSS_COMPILE=$(TOOLCHAIN_PREFIX)- KBUILD_BUILD_TIMESTAMP="$(KERNEL_TIMESTAMP)" KBUILD_BUILD_USER=dapp KBUILD_BUILD_HOST=cartesi
 $(LINUX_DIR)/vmlinux $(IMAGE) $(HEADERS) &: $(LINUX_DIR)/.config
 	mkdir -p artifacts
 	$(MAKE) -rC $(LINUX_DIR) $(LINUX_OPTS) olddefconfig
 	$(MAKE) -rC $(LINUX_DIR) $(LINUX_OPTS) vmlinux Image
 	$(MAKE) -rC $(LINUX_DIR) $(LINUX_OPTS) headers_install \
 		INSTALL_HDR_PATH=$(abspath work/linux-headers)
-	tar cJf $(HEADERS) $(abspath work/linux-headers)
+	tar --sort=name --mtime="$(KERNEL_TIMESTAMP)" --owner=1000 --group=1000 --numeric-owner -cJf $(HEADERS) $(abspath work/linux-headers)
 	cp work/linux/arch/riscv/boot/Image $(IMAGE)
 	cp $(LINUX_DIR)/vmlinux $(LINUX_ELF)
 
 env:
 	@echo export ARCH=riscv
 	@echo export CROSS_COMPILE=$(TOOLCHAIN_PREFIX)-
+	@echo export KBUILD_BUILD_TIMESTAMP="$(KERNEL_TIMESTAMP)"
+	@echo export KBUILD_BUILD_USER=dapp
+	@echo export KBUILD_BUILD_HOST=cartesi
 
 # configure riscv-pk
 # ------------------------------------------------------------------------------
@@ -61,8 +66,8 @@ $(SELFTEST):
 	mkdir -p artifacts
 	$(MAKE) $(JOBS) -rC $(LINUX_TEST_DIR) $(LINUX_OPTS) \
 		TARGETS=drivers/cartesi install
-	tar --sort=name --mtime="2022-01-01" --owner=1000 --group=1000 --numeric-owner -cf $(TAR) --directory=$(LINUX_TEST_DIR)/kselftest_install .
-	genext2fs -i 4096 -b 1024 -a $(TAR) $@
+	tar --sort=name --mtime="$(KERNEL_TIMESTAMP)" --owner=1000 --group=1000 --numeric-owner -cf $(TAR) --directory=$(LINUX_TEST_DIR)/kselftest_install .
+	genext2fs -f -i 4096 -b 1024 -a $(TAR) $@
 	rm $(TAR)
 
 clean:

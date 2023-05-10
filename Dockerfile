@@ -17,8 +17,9 @@ FROM ${TOOLCHAIN_REPOSITORY}:${TOOLCHAIN_VERSION}
 
 LABEL maintainer="Diego Nehab <diego@cartesi.io>"
 
-ARG KERNEL_VERSION=5.15.63-ctsi-2
-ARG RISCV_PK_VERSION=1.0.0-ctsi-1
+ARG KERNEL_VERSION=0.0.0-ctsi-y
+ARG KERNEL_TIMESTAMP="Thu, 01 Jan 1970 00:00:00 +0000"
+ARG RISCV_PK_VERSION=0.0.0-ctsi-y
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -53,7 +54,7 @@ RUN tar xzf ${BUILD_BASE}/dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz \
 COPY cartesi-linux-config ${BUILD_BASE}/work/linux/.config
 
 COPY build.mk build.mk
-RUN make -f build.mk
+RUN make -f build.mk KERNEL_TIMESTAMP="${KERNEL_TIMESTAMP}"
 
 USER root
 
