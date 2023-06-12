@@ -110,7 +110,7 @@ run-selftest:
 
 # clone (for non CI environment)
 # ------------------------------------------------------------------------------
-clone: LINUX_BRANCH ?= linux-5.15.63-ctsi-y
+clone: LINUX_BRANCH ?= linux-6.1.33-ctsi-y
 clone: RISCV_PK_BRANCH ?= v1.0.0-ctsi-1
 clone:
 	git clone --depth 1 --branch $(LINUX_BRANCH) \
