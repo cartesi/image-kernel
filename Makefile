@@ -28,9 +28,9 @@ TAG ?= devel
 TOOLCHAIN_REPOSITORY ?= cartesi/toolchain
 TOOLCHAIN_TAG ?= 0.15.0
 KERNEL_VERSION ?= 5.15.63-ctsi-2
-KERNEL_SRCPATH := linux-$(KERNEL_VERSION).tar.gz
-RISCV_PK_VERSION ?= 1.0.0-ctsi-1
-RISCV_PK_SRCPATH := riscv-pk-$(RISCV_PK_VERSION).tar.gz
+KERNEL_SRCPATH := dep/linux-${KERNEL_VERSION}.tar.gz
+OPENSBI_VERSION ?= opensbi-1.2-ctsi-y
+OPENSBI_SRCPATH := dep/opensbi-${OPENSBI_VERSION}.tar.gz
 KERNEL_CONFIG ?= configs/default-linux-config
 
 CONTAINER_BASE := /opt/cartesi/kernel
@@ -43,6 +43,12 @@ KERNEL_TIMESTAMP ?= $(shell date -r $(shell git log -1 --format=%ct 2> /dev/null
 else
 KERNEL_TIMESTAMP ?= $(shell date -Rud @$(shell git log -1 --format=%ct 2> /dev/null || date +%s))
 endif
+
+HEADERS  := linux-headers-$(KERNEL_VERSION).tar.xz
+IMAGE    := linux-nobl-$(KERNEL_VERSION).bin
+LINUX    := linux-$(KERNEL_VERSION).bin
+LINUX_ELF:= linux-$(KERNEL_VERSION).elf
+SELFTEST := linux-selftest-$(KERNEL_VERSION).ext2
 
 BUILD_ARGS :=
 
@@ -66,8 +72,8 @@ ifneq ($(KERNEL_TIMESTAMP),)
 BUILD_ARGS += --build-arg KERNEL_TIMESTAMP="$(KERNEL_TIMESTAMP)"
 endif
 
-ifneq ($(RISCV_PK_VERSION),)
-BUILD_ARGS += --build-arg RISCV_PK_VERSION=$(RISCV_PK_VERSION)
+ifneq ($(OPENSBI_VERSION),)
+BUILD_ARGS += --build-arg OPENSBI_VERSION=$(OPENSBI_VERSION)
 endif
 
 .NOTPARALLEL: all
@@ -118,23 +124,24 @@ cartesi-linux-config:
 $(KERNEL_SRCPATH):
 	wget -O $@ https://github.com/cartesi/linux/archive/v$(KERNEL_VERSION).tar.gz
 
-$(RISCV_PK_SRCPATH):
-	wget -O $@ https://github.com/cartesi/riscv-pk/archive/v$(RISCV_PK_VERSION).tar.gz
-
-checksum: $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
-	shasum -ca 256 shasumfile
-
-shasumfile: $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
-	@shasum -a 256 $^ > $@
-
-download: checksum
-
 clean-config:
 	rm -f ./cartesi-linux-config
 
 clean: clean-config
-	rm -rf artifacts/
+	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(SELFTEST)
 
 depclean: clean
 	rm -f \
-		$(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
+		$(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)
+
+checksum: $(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)
+	shasum -ca 256 shasumfile
+
+shasumfile: $(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)
+	@shasum -a 256 $^ > $@
+
+download: checksum
+
+$(OPENSBI_SRCPATH): URL=https://github.com/cartesi/opensbi/archive/${OPENSBI_VERSION}.tar.gz
+$(OPENSBI_SRCPATH): | dep
+	T=`mktemp` && wget "$(URL)" -O $$T && mv $$T $@ || rm $$T

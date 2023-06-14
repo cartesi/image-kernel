@@ -46,6 +46,13 @@ jobs:
       - name: Set up Depot CLI
         uses: depot/setup-action@v1
 
+        #TODO: change before merge -- gh release download -D dep/ -R ${{ github.repository_owner }}/riscv-pk v${{ env.RISCV_PK_VERSION }} --archive=tar.gz
+      - name: Download opensbi
+        run: >
+          wget https://github.com/cartesi/opensbi/archive/refs/heads/${{ env.OPENSBI_VERSION }}.tar.gz && mv ${{ env.OPENSBI_VERSION }}.tar.gz dep/opensbi-${{ env.OPENSBI_VERSION }}.tar.gz && ls -la dep
+        env:
+          GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
+
       - name: Build docker image
         id: docker_build
         uses: depot/build-push-action@v1
@@ -60,7 +67,7 @@ jobs:
             TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             IMAGE_KERNEL_VERSION=${{ env.IMAGE_KERNEL_VERSION }}
-            RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
+            OPENSBI_VERSION=${{ env.OPENSBI_VERSION }}
           cache-from: type=gha,scope=regular
           cache-to: type=gha,mode=max,scope=regular
           project: ${{ vars.DEPOT_PROJECT }}
@@ -72,6 +79,13 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: artifacts/*
+
+      # TODO: remove before merge
+      - name: Save kernel as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-${{ env.KERNEL_VERSION }}.bin
+          path: linux-${{ env.KERNEL_VERSION }}.bin
 
       - uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/v')
@@ -96,7 +110,7 @@ jobs:
             TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             IMAGE_KERNEL_VERSION=${{ env.IMAGE_KERNEL_VERSION }}
-            RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
+            OPENSBI_VERSION=${{ env.OPENSBI_VERSION }}
           cache-from: type=gha,scope=regular
           cache-to: type=gha,mode=max,scope=regular
           project: ${{ vars.DEPOT_PROJECT }}
