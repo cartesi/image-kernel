@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ## Changed
 - Make kernel build timestamp deterministic
+- Updated CI downloads to public infrastructure
+- Updated CI actions versions
 
 ## [0.16.0] - 2023-03-30
 ### Changed
