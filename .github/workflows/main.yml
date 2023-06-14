@@ -32,20 +32,12 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download linux
-        run: >
-          gh release download -D dep/ -R ${{ github.repository_owner }}/linux v${{ env.KERNEL_VERSION }} --archive=tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
-
-      - name: Download riscv-pk
-        run: >
-          gh release download -D dep/ -R ${{ github.repository_owner }}/riscv-pk v${{ env.RISCV_PK_VERSION }} --archive=tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
+      - name: Download dependencies
+        run: make download checksum
 
       - name: Build docker image
         id: docker_build
@@ -79,6 +71,30 @@ jobs:
             linux-selftest-${{ env.KERNEL_VERSION }}.ext2
         env:
           GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
+
+      - name: Upload [linux-headers-${{ env.KERNEL_VERSION }}.tar.xz]
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-headers-${{ env.KERNEL_VERSION }}.tar.xz
+          path: linux-headers-${{ env.KERNEL_VERSION }}.tar.xz
+
+      - name: Upload [linux-nobbl-${{ env.KERNEL_VERSION }}.bin]
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-nobbl-${{ env.KERNEL_VERSION }}.bin
+          path: linux-nobbl-${{ env.KERNEL_VERSION }}.bin
+
+      - name: Upload [linux-${{ env.KERNEL_VERSION }}.bin]
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-${{ env.KERNEL_VERSION }}.bin
+          path: linux-${{ env.KERNEL_VERSION }}.bin
+
+      - name: Upload [linux-selftest-${{ env.KERNEL_VERSION }}.ext2]
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-selftest-${{ env.KERNEL_VERSION }}.ext2
+          path: linux-selftest-${{ env.KERNEL_VERSION }}.ext2
 
       - name: Push docker image
         id: docker_push

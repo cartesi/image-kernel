@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-.PHONY: all build push run pull share copy clean clean-config checksum
+.PHONY: all build download push run pull share copy clean clean-config checksum
 
 TAG ?= devel
 TOOLCHAIN_DOCKER_REPOSITORY ?= cartesi/toolchain
@@ -62,7 +62,7 @@ endif
 .NOTPARALLEL: all
 all: build copy
 
-build: cartesi-linux-config checksum
+build: cartesi-linux-config download
 	docker build -t $(IMG) $(BUILD_ARGS) .
 
 push:
@@ -113,6 +113,8 @@ depclean: clean
 
 checksum: $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
 	shasum -ca 256 shasumfile
+
+download: $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
 
 dep:
 	mkdir dep
