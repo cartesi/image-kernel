@@ -8,29 +8,29 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Copy default Cartesi Linux config
         run: make cartesi-linux-config
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Docker meta
         id: docker_meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: ${{ secrets.DOCKER_ORGANIZATION }}/linux-kernel
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
+      - name: Login to GHCR
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -41,7 +41,7 @@ jobs:
 
       - name: Build docker image
         id: docker_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: .
           builder: ${{ steps.buildx.outputs.name }}
@@ -57,7 +57,7 @@ jobs:
           cache-from: type=gha,mode=xmax,scope=regular
           cache-to: type=gha,scope=regular
 
-      - name: Export linux.bin artifact
+      - name: Export artifacts
         run: make copy IMG=`echo "${{ steps.docker_meta.outputs.tags }}" | head -1 | cut -d "," -f 1 | xargs`
 
       - uses: softprops/action-gh-release@v1
@@ -98,7 +98,7 @@ jobs:
 
       - name: Push docker image
         id: docker_push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         if: ${{ startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/develop') }}
         with:
           context: .
