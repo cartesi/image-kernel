@@ -102,7 +102,7 @@ clean-config:
 	rm -f ./cartesi-linux-config
 
 clean: clean-config
-	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(SELFTEST)
+	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(LINUX_ELF) $(SELFTEST)
 
 depclean: clean
 	rm -f \
