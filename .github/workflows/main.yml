@@ -61,7 +61,7 @@ jobs:
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             KERNEL_TIMESTAMP=${{ env.KERNEL_TIMESTAMP }}
             IMAGE_KERNEL_VERSION=${{ env.IMAGE_KERNEL_VERSION }}
-            RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
+            OPENSBI_VERSION=${{ env.OPENSBI_VERSION }}
           cache-from: type=gha,scope=regular
           cache-to: type=gha,mode=max,scope=regular
           project: ${{ vars.DEPOT_PROJECT }}
@@ -104,7 +104,7 @@ jobs:
             TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             IMAGE_KERNEL_VERSION=${{ env.IMAGE_KERNEL_VERSION }}
-            RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
+            OPENSBI_VERSION=${{ env.OPENSBI_VERSION }}
           cache-from: type=gha,scope=regular
           cache-to: type=gha,mode=max,scope=regular
           project: ${{ vars.DEPOT_PROJECT }}
