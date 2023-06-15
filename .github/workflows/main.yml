@@ -96,6 +96,18 @@ jobs:
           name: linux-selftest-${{ env.KERNEL_VERSION }}.ext2
           path: linux-selftest-${{ env.KERNEL_VERSION }}.ext2
 
+      - name: Upload [linux-libc-dev-${{ env.KERNEL_VERSION }}.deb]
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-libc-dev-${{ env.KERNEL_VERSION }}.deb
+          path: linux-libc-dev-${{ env.KERNEL_VERSION }}.deb
+
+      - name: Upload [linux-libc-dev-riscv64-cross-${{ env.KERNEL_VERSION }}.deb]
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-libc-dev-riscv64-cross-${{ env.KERNEL_VERSION }}.deb
+          path: linux-libc-dev-riscv64-cross-${{ env.KERNEL_VERSION }}.deb
+
       - name: Push docker image
         id: docker_push
         uses: docker/build-push-action@v4

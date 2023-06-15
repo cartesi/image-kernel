@@ -31,11 +31,13 @@ CONTAINER_BASE := /opt/cartesi/kernel
 IMG ?= cartesi/linux-kernel:$(TAG)
 BASE:=/opt/riscv
 
-HEADERS  := linux-headers-$(KERNEL_VERSION).tar.xz
-IMAGE    := linux-nobbl-$(KERNEL_VERSION).bin
-LINUX    := linux-$(KERNEL_VERSION).bin
-LINUX_ELF:= linux-$(KERNEL_VERSION).elf
-SELFTEST := linux-selftest-$(KERNEL_VERSION).ext2
+HEADERS    := linux-headers-$(KERNEL_VERSION).tar.xz
+IMAGE      := linux-nobbl-$(KERNEL_VERSION).bin
+LINUX      := linux-$(KERNEL_VERSION).bin
+LINUX_ELF  := linux-$(KERNEL_VERSION).elf
+SELFTEST   := linux-selftest-$(KERNEL_VERSION).ext2
+NATIVE_DEB := linux-libc-dev-$(KERNEL_VERSION).deb
+CROSS_DEB  := linux-libc-dev-riscv64-cross-$(KERNEL_VERSION).deb
 
 BUILD_ARGS :=
 
@@ -96,6 +98,8 @@ copy:
 	   docker cp $$ID:$(BASE)/kernel/artifacts/$(LINUX)    . && \
 	   docker cp $$ID:$(BASE)/kernel/artifacts/$(LINUX_ELF) . && \
 	   docker cp $$ID:$(BASE)/kernel/artifacts/$(SELFTEST) . && \
+	   docker cp $$ID:$(BASE)/kernel/artifacts/$(NATIVE_DEB) . && \
+	   docker cp $$ID:$(BASE)/kernel/artifacts/$(CROSS_DEB) . && \
 	   docker rm -v $$ID
 
 cartesi-linux-config:
@@ -105,7 +109,7 @@ clean-config:
 	rm -f ./cartesi-linux-config
 
 clean: clean-config
-	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(LINUX_ELF) $(SELFTEST)
+	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(LINUX_ELF) $(SELFTEST) $(NATIVE_DEB) $(CROSS_DEB)
 
 depclean: clean
 	rm -f \

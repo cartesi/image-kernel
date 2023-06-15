@@ -1,0 +1,8 @@
+Package: linux-libc-dev-riscv64-cross
+Version: ARG_KERNEL_VERSION
+Architecture: any
+Priority: optional
+Section: devel
+Maintainer: Machine Reference Unit <https://discord.com/channels/600597137524391947/1107965671976992878>
+Provides: linux-kernel-headers-riscv64-cross, linux-libc-dev-riscv64-dcv1
+Description: Linux Kernel Headers for development (for cross-compiling)

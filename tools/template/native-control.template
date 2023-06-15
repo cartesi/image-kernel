@@ -1,0 +1,8 @@
+Package: linux-libc-dev
+Version: ARG_KERNEL_VERSION
+Architecture: riscv64
+Priority: optional
+Section: devel
+Maintainer: Machine Reference Unit <https://discord.com/channels/600597137524391947/1107965671976992878>
+Provides: linux-kernel-headers
+Description: Linux Kernel Headers for development
