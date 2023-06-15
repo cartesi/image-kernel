@@ -49,8 +49,6 @@ jobs:
           push: false
           load: true
           build-args: |
-            TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             IMAGE_KERNEL_VERSION=${{ env.IMAGE_KERNEL_VERSION }}
             RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}
@@ -86,8 +84,6 @@ jobs:
           push: true
           load: false
           build-args: |
-            TOOLCHAIN_REPOSITORY=${{ secrets.DOCKER_ORGANIZATION }}/toolchain
-            TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
             IMAGE_KERNEL_VERSION=${{ env.IMAGE_KERNEL_VERSION }}
             RISCV_PK_VERSION=${{ env.RISCV_PK_VERSION }}

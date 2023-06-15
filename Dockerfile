@@ -11,9 +11,7 @@
 # the License.
 #
 
-ARG TOOLCHAIN_REPOSITORY=cartesi/toolchain
-ARG TOOLCHAIN_VERSION=latest
-FROM ${TOOLCHAIN_REPOSITORY}:${TOOLCHAIN_VERSION}
+FROM debian:bookworm
 
 LABEL maintainer="Diego Nehab <diego@cartesi.io>"
 
@@ -25,14 +23,30 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 ENV OLDPATH=$PATH
 
+ENV BASE=/opt/riscv
 ENV BUILD_BASE=$BASE/kernel
 
 # setup dirs
 # ------------------------------------------------------------------------------
 RUN \
+  useradd developer && \
   mkdir -p ${BUILD_BASE}/artifacts && \
   chown -R developer:developer ${BUILD_BASE} && \
   chmod go+w ${BUILD_BASE}
+
+RUN \
+  apt-get update && \
+  DEBIAN_FRONTEND="noninteractive" apt-get install --no-install-recommends -y \
+    bc \
+    bison \
+    build-essential \
+    flex \
+    gcc-riscv64-linux-gnu \
+    genext2fs \
+    libc6-dev-riscv64-cross \
+    rsync \
+  && \
+  rm -rf /var/lib/apt/lists/*
 
 WORKDIR ${BUILD_BASE}
 USER developer

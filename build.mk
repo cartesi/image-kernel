@@ -1,4 +1,4 @@
-TOOLCHAIN_PREFIX    := riscv64-cartesi-linux-gnu
+TOOLCHAIN_PREFIX    := riscv64-linux-gnu
 
 RISCV_PK_DIR        := work/riscv-pk
 RISCV_PK_BUILD_DIR  := $(RISCV_PK_DIR)/build

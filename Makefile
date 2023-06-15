@@ -20,8 +20,6 @@ LABEL :=
 IMAGE_KERNEL_VERSION?= $(MAJOR).$(MINOR).$(PATCH)$(LABEL)
 
 TAG ?= devel
-TOOLCHAIN_DOCKER_REPOSITORY ?= cartesi/toolchain
-TOOLCHAIN_TAG ?= 0.13.0
 KERNEL_TIMESTAMP ?= $(shell date -Rud @$(shell git log -1 --format=%ct 2> /dev/null || date +%s))
 KERNEL_VERSION ?= 5.15.63-ctsi-2
 KERNEL_SRCPATH := linux-$(KERNEL_VERSION).tar.gz
@@ -38,14 +36,6 @@ BUILD_ARGS :=
 
 ifneq ($(IMAGE_KERNEL_VERSION),)
 BUILD_ARGS += --build-arg IMAGE_KERNEL_VERSION=$(IMAGE_KERNEL_VERSION)
-endif
-
-ifneq ($(TOOLCHAIN_DOCKER_REPOSITORY),)
-BUILD_ARGS += --build-arg TOOLCHAIN_REPOSITORY=$(TOOLCHAIN_DOCKER_REPOSITORY)
-endif
-
-ifneq ($(TOOLCHAIN_TAG),)
-BUILD_ARGS += --build-arg TOOLCHAIN_VERSION=$(TOOLCHAIN_TAG)
 endif
 
 ifneq ($(KERNEL_VERSION),)
@@ -71,21 +61,6 @@ push:
 
 pull:
 	docker pull $(IMG)
-
-run:
-	docker run --hostname toolchain-env -it --rm \
-		-e USER=$$(id -u -n) \
-		-e GROUP=$$(id -g -n) \
-		-e UID=$$(id -u) \
-		-e GID=$$(id -g) \
-		-v `pwd`:$(CONTAINER_BASE) \
-		-w $(CONTAINER_BASE) \
-		$(IMG) $(CONTAINER_COMMAND)
-
-run-as-root:
-	docker run --hostname toolchain-env -it --rm \
-		-v `pwd`:$(CONTAINER_BASE) \
-		$(IMG) $(CONTAINER_COMMAND)
 
 config: CONTAINER_COMMAND := $(CONTAINER_BASE)/scripts/update-linux-config
 config: cartesi-linux-config run-as-root
