@@ -3,5 +3,6 @@ linux-*.bin
 linux-nobbl-*.bin
 linux-headers-*.tar.xz
 linux-selftest-*.ext2
+linux-libc-dev-*.deb
 cartesi-linux-config
 dep

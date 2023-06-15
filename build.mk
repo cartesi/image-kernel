@@ -15,10 +15,19 @@ IMAGE               := artifacts/linux-nobbl-$(KERNEL_VERSION).bin
 LINUX               := artifacts/linux-$(KERNEL_VERSION).bin
 LINUX_ELF           := artifacts/linux-$(KERNEL_VERSION).elf
 SELFTEST            := artifacts/linux-selftest-$(KERNEL_VERSION).ext2
+CROSS_DEB_FILENAME  := artifacts/linux-libc-dev-riscv64-cross-$(KERNEL_VERSION).deb
+NATIVE_DEB_FILENAME := artifacts/linux-libc-dev-$(KERNEL_VERSION).deb
 ARTIFACTS           := $(HEADERS) $(IMAGE) $(LINUX) $(SELFTEST)
 
 
 all: $(ARTIFACTS)
+
+env:
+	@echo export ARCH=riscv
+	@echo export CROSS_COMPILE=$(TOOLCHAIN_PREFIX)-
+	@echo export KBUILD_BUILD_TIMESTAMP="$(KERNEL_TIMESTAMP)"
+	@echo export KBUILD_BUILD_USER=dapp
+	@echo export KBUILD_BUILD_HOST=cartesi
 
 # build linux
 # ------------------------------------------------------------------------------
@@ -33,12 +42,21 @@ $(LINUX_DIR)/vmlinux $(IMAGE) $(HEADERS) &: $(LINUX_DIR)/.config
 	cp work/linux/arch/riscv/boot/Image $(IMAGE)
 	cp $(LINUX_DIR)/vmlinux $(LINUX_ELF)
 
-env:
-	@echo export ARCH=riscv
-	@echo export CROSS_COMPILE=$(TOOLCHAIN_PREFIX)-
-	@echo export KBUILD_BUILD_TIMESTAMP="$(KERNEL_TIMESTAMP)"
-	@echo export KBUILD_BUILD_USER=dapp
-	@echo export KBUILD_BUILD_HOST=cartesi
+cross-deb:  # TARGET == riscv64
+	mkdir -p $(DESTDIR)/DEBIAN
+	cat tools/template/cross-control.template | sed 's|ARG_KERNEL_VERSION|$(KERNEL_VERSION)|g' > $(DESTDIR)/DEBIAN/control
+	$(MAKE) -rC $(LINUX_DIR) $(LINUX_OPTS) headers_install \
+		INSTALL_HDR_PATH=$(abspath $(DESTDIR))/usr/riscv64-linux-gnu
+	find $(DESTDIR) -exec touch -d "$(KERNEL_TIMESTAMP)" {} \;
+	SOURCE_DATE_EPOCH="1" dpkg-deb -Zxz --root-owner-group --build $(DESTDIR) $(CROSS_DEB_FILENAME)
+
+native-deb: # HOST   == riscv64
+	mkdir -p $(DESTDIR)/DEBIAN
+	cat tools/template/native-control.template | sed 's|ARG_KERNEL_VERSION|$(KERNEL_VERSION)|g' > $(DESTDIR)/DEBIAN/control
+	$(MAKE) -rC $(LINUX_DIR) $(LINUX_OPTS) headers_install \
+		INSTALL_HDR_PATH=$(abspath $(DESTDIR))/usr
+	find $(DESTDIR) -exec touch -d "$(KERNEL_TIMESTAMP)" {} \;
+	SOURCE_DATE_EPOCH="1" dpkg-deb -Zxz --root-owner-group --build $(DESTDIR) $(NATIVE_DEB_FILENAME)
 
 # configure riscv-pk
 # ------------------------------------------------------------------------------
@@ -85,7 +103,7 @@ run-selftest:
 
 # clone (for non CI environment)
 # ------------------------------------------------------------------------------
-clone: LINUX_BRANCH ?= linux-5.5.19-ctsi-y
+clone: LINUX_BRANCH ?= linux-5.15.63-ctsi-y
 clone: RISCV_PK_BRANCH ?= v1.0.0-ctsi-1
 clone:
 	git clone --depth 1 --branch $(LINUX_BRANCH) \

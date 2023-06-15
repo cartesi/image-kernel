@@ -53,8 +53,18 @@ RUN tar xzf ${BUILD_BASE}/dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz \
 
 COPY cartesi-linux-config ${BUILD_BASE}/work/linux/.config
 
+# build
+# ------------------------------------------------------------------------------
 COPY build.mk build.mk
 RUN make -f build.mk KERNEL_TIMESTAMP="${KERNEL_TIMESTAMP}"
+
+# deb headers
+# ------------------------------------------------------------------------------
+COPY tools tools
+RUN make -f build.mk KERNEL_TIMESTAMP="${KERNEL_TIMESTAMP}" DESTDIR=${BUILD_BASE}/work/_install cross-deb \
+	&& rm -rf ${BUILD_BASE}/work/_install
+RUN make -f build.mk KERNEL_TIMESTAMP="${KERNEL_TIMESTAMP}" DESTDIR=${BUILD_BASE}/work/_install native-deb \
+	&& rm -rf ${BUILD_BASE}/work/_install
 
 USER root
 
