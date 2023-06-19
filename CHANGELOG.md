@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.16.1] - 2023-06-20
+### Fixed
+- Fixed toolchain version (v0.14.0)
+
 ## [0.16.0] - 2023-03-30
 ### Changed
 - Updated Linux Kernel to v5.15.63-ctsi-2
@@ -66,7 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [0.2.0]
 - [0.1.0]
 
-[Unreleased]: https://github.com/cartesi/image-kernel/compare/v0.16.0...HEAD
+[Unreleased]: https://github.com/cartesi/image-kernel/compare/v0.16.1...HEAD
+[0.16.1]: https://github.com/cartesi/image-kernel/releases/tag/v0.16.1
 [0.16.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.16.0
 [0.15.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.15.0
 [0.14.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.14.0
