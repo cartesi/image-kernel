@@ -22,10 +22,11 @@ PATCH := 0
 LABEL :=
 IMAGE_KERNEL_VERSION?= $(MAJOR).$(MINOR).$(PATCH)$(LABEL)
 
+UNAME:=$(shell uname)
+
 TAG ?= devel
-TOOLCHAIN_DOCKER_REPOSITORY ?= cartesi/toolchain
-TOOLCHAIN_TAG ?= 0.13.0
-KERNEL_TIMESTAMP ?= $(shell date -Rud @$(shell git log -1 --format=%ct 2> /dev/null || date +%s))
+TOOLCHAIN_REPOSITORY ?= cartesi/toolchain
+TOOLCHAIN_TAG ?= 0.15.0
 KERNEL_VERSION ?= 5.15.63-ctsi-2
 KERNEL_SRCPATH := linux-$(KERNEL_VERSION).tar.gz
 RISCV_PK_VERSION ?= 1.0.0-ctsi-1
@@ -37,14 +38,20 @@ CONTAINER_BASE := /opt/cartesi/kernel
 IMG ?= cartesi/linux-kernel:$(TAG)
 BASE:=/opt/riscv
 
+ifeq ($(UNAME),Darwin)
+KERNEL_TIMESTAMP ?= $(shell date -r $(shell git log -1 --format=%ct 2> /dev/null || date +%s) +"%a, %d %b %Y %H:%M:%S +0000")
+else
+KERNEL_TIMESTAMP ?= $(shell date -Rud @$(shell git log -1 --format=%ct 2> /dev/null || date +%s))
+endif
+
 BUILD_ARGS :=
 
 ifneq ($(IMAGE_KERNEL_VERSION),)
 BUILD_ARGS += --build-arg IMAGE_KERNEL_VERSION=$(IMAGE_KERNEL_VERSION)
 endif
 
-ifneq ($(TOOLCHAIN_DOCKER_REPOSITORY),)
-BUILD_ARGS += --build-arg TOOLCHAIN_REPOSITORY=$(TOOLCHAIN_DOCKER_REPOSITORY)
+ifneq ($(TOOLCHAIN_REPOSITORY),)
+BUILD_ARGS += --build-arg TOOLCHAIN_REPOSITORY=$(TOOLCHAIN_REPOSITORY)
 endif
 
 ifneq ($(TOOLCHAIN_TAG),)
@@ -97,6 +104,7 @@ env:
 	@echo KERNEL_VERSION="$(KERNEL_VERSION)"
 	@echo IMAGE_KERNEL_VERSION="$(IMAGE_KERNEL_VERSION)"
 	@echo RISCV_PK_VERSION="$(RISCV_PK_VERSION)"
+	@echo TOOLCHAIN_REPOSITORY="$(TOOLCHAIN_REPOSITORY)"
 	@echo TOOLCHAIN_VERSION="$(TOOLCHAIN_TAG)"
 	@make -srf build.mk KERNEL_VERSION=$(KERNEL_VERSION) IMAGE_KERNEL_VERSION=$(IMAGE_KERNEL_VERSION) env
 copy:
