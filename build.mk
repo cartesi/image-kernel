@@ -10,24 +10,31 @@ JOBS                := -j$(shell nproc)
 
 KERNEL_VERSION      ?= $(shell make -sC $(LINUX_DIR) kernelversion)
 KERNEL_TIMESTAMP    ?= $(shell date -Ru)
-HEADERS             := artifacts/linux-headers-$(KERNEL_VERSION).tar.xz
-IMAGE               := artifacts/linux-nobbl-$(KERNEL_VERSION).bin
-LINUX               := artifacts/linux-$(KERNEL_VERSION).bin
-LINUX_ELF           := artifacts/linux-$(KERNEL_VERSION).elf
-SELFTEST            := artifacts/linux-selftest-$(KERNEL_VERSION).ext2
-CROSS_DEB_FILENAME  := artifacts/linux-libc-dev-riscv64-cross-$(KERNEL_VERSION).deb
-NATIVE_DEB_FILENAME := artifacts/linux-libc-dev-$(KERNEL_VERSION).deb
+IMAGE_KERNEL_VERSION?= 0.0.0
+HEADERS             := artifacts/linux-headers-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).tar.xz
+IMAGE               := artifacts/linux-nobbl-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).bin
+LINUX               := artifacts/linux-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).bin
+LINUX_ELF           := artifacts/linux-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).elf
+SELFTEST            := artifacts/linux-selftest-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).ext2
+CROSS_DEB_FILENAME  := artifacts/linux-libc-dev-riscv64-cross-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).deb
+NATIVE_DEB_FILENAME := artifacts/linux-libc-dev-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).deb
 ARTIFACTS           := $(HEADERS) $(IMAGE) $(LINUX) $(SELFTEST)
 
 
 all: $(ARTIFACTS)
 
 env:
-	@echo export ARCH=riscv
-	@echo export CROSS_COMPILE=$(TOOLCHAIN_PREFIX)-
-	@echo export KBUILD_BUILD_TIMESTAMP="$(KERNEL_TIMESTAMP)"
-	@echo export KBUILD_BUILD_USER=dapp
-	@echo export KBUILD_BUILD_HOST=cartesi
+	@echo KBUILD_BUILD_TIMESTAMP=\""$(KERNEL_TIMESTAMP)"\"
+	@echo KBUILD_BUILD_USER=dapp
+	@echo KBUILD_BUILD_HOST=cartesi
+
+	@echo HEADERS="$(HEADERS)"
+	@echo IMAGE="$(IMAGE)"
+	@echo LINUX="$(LINUX)"
+	@echo LINUX_ELF="$(LINUX_ELF)"
+	@echo SELFTEST="$(SELFTEST)"
+	@echo CROSS_DEB_FILENAME="$(CROSS_DEB_FILENAME)"
+	@echo NATIVE_DEB_FILENAME="$(NATIVE_DEB_FILENAME)"
 
 # build linux
 # ------------------------------------------------------------------------------

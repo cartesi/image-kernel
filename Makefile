@@ -16,14 +16,20 @@
 
 .PHONY: all build download push run pull share copy clean clean-config checksum
 
+MAJOR := 0
+MINOR := 16
+PATCH := 0
+LABEL :=
+IMAGE_KERNEL_VERSION?= $(MAJOR).$(MINOR).$(PATCH)$(LABEL)
+
 TAG ?= devel
 TOOLCHAIN_DOCKER_REPOSITORY ?= cartesi/toolchain
 TOOLCHAIN_TAG ?= 0.13.0
 KERNEL_TIMESTAMP ?= $(shell date -Rud @$(shell git log -1 --format=%ct 2> /dev/null || date +%s))
 KERNEL_VERSION ?= 5.15.63-ctsi-2
-KERNEL_SRCPATH := dep/linux-${KERNEL_VERSION}.tar.gz
+KERNEL_SRCPATH := linux-$(KERNEL_VERSION).tar.gz
 RISCV_PK_VERSION ?= 1.0.0-ctsi-1
-RISCV_PK_SRCPATH := dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz
+RISCV_PK_SRCPATH := riscv-pk-$(RISCV_PK_VERSION).tar.gz
 KERNEL_CONFIG ?= configs/default-linux-config
 
 CONTAINER_BASE := /opt/cartesi/kernel
@@ -31,15 +37,11 @@ CONTAINER_BASE := /opt/cartesi/kernel
 IMG ?= cartesi/linux-kernel:$(TAG)
 BASE:=/opt/riscv
 
-HEADERS    := linux-headers-$(KERNEL_VERSION).tar.xz
-IMAGE      := linux-nobbl-$(KERNEL_VERSION).bin
-LINUX      := linux-$(KERNEL_VERSION).bin
-LINUX_ELF  := linux-$(KERNEL_VERSION).elf
-SELFTEST   := linux-selftest-$(KERNEL_VERSION).ext2
-NATIVE_DEB := linux-libc-dev-$(KERNEL_VERSION).deb
-CROSS_DEB  := linux-libc-dev-riscv64-cross-$(KERNEL_VERSION).deb
-
 BUILD_ARGS :=
+
+ifneq ($(IMAGE_KERNEL_VERSION),)
+BUILD_ARGS += --build-arg IMAGE_KERNEL_VERSION=$(IMAGE_KERNEL_VERSION)
+endif
 
 ifneq ($(TOOLCHAIN_DOCKER_REPOSITORY),)
 BUILD_ARGS += --build-arg TOOLCHAIN_REPOSITORY=$(TOOLCHAIN_DOCKER_REPOSITORY)
@@ -91,41 +93,40 @@ run-as-root:
 config: CONTAINER_COMMAND := $(CONTAINER_BASE)/scripts/update-linux-config
 config: cartesi-linux-config run-as-root
 
+env:
+	@echo KERNEL_VERSION="$(KERNEL_VERSION)"
+	@echo IMAGE_KERNEL_VERSION="$(IMAGE_KERNEL_VERSION)"
+	@echo RISCV_PK_VERSION="$(RISCV_PK_VERSION)"
+	@echo TOOLCHAIN_VERSION="$(TOOLCHAIN_TAG)"
+	@make -srf build.mk KERNEL_VERSION=$(KERNEL_VERSION) IMAGE_KERNEL_VERSION=$(IMAGE_KERNEL_VERSION) env
 copy:
 	ID=`docker create $(IMG)` && \
-	   docker cp $$ID:$(BASE)/kernel/artifacts/$(HEADERS)  . && \
-	   docker cp $$ID:$(BASE)/kernel/artifacts/$(IMAGE)    . && \
-	   docker cp $$ID:$(BASE)/kernel/artifacts/$(LINUX)    . && \
-	   docker cp $$ID:$(BASE)/kernel/artifacts/$(LINUX_ELF) . && \
-	   docker cp $$ID:$(BASE)/kernel/artifacts/$(SELFTEST) . && \
-	   docker cp $$ID:$(BASE)/kernel/artifacts/$(NATIVE_DEB) . && \
-	   docker cp $$ID:$(BASE)/kernel/artifacts/$(CROSS_DEB) . && \
+	   docker cp $$ID:$(BASE)/kernel/artifacts/ . && \
 	   docker rm -v $$ID
 
 cartesi-linux-config:
 	cp $(KERNEL_CONFIG) ./cartesi-linux-config
 
-clean-config:
-	rm -f ./cartesi-linux-config
+$(KERNEL_SRCPATH):
+	wget -O $@ https://github.com/cartesi/linux/archive/v$(KERNEL_VERSION).tar.gz
 
-clean: clean-config
-	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(LINUX_ELF) $(SELFTEST) $(NATIVE_DEB) $(CROSS_DEB)
-
-depclean: clean
-	rm -f \
-		$(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
+$(RISCV_PK_SRCPATH):
+	wget -O $@ https://github.com/cartesi/riscv-pk/archive/v$(RISCV_PK_VERSION).tar.gz
 
 checksum: $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
 	shasum -ca 256 shasumfile
 
-download: $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
+shasumfile: $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
+	@shasum -a 256 $^ > $@
 
-dep:
-	mkdir dep
-$(KERNEL_SRCPATH): URL=https://github.com/cartesi/linux/archive/v${KERNEL_VERSION}.tar.gz
-$(KERNEL_SRCPATH): | dep
-	T=`mktemp` && wget "$(URL)" -O $$T && mv $$T $@ || rm $$T
+download: checksum
 
-$(RISCV_PK_SRCPATH): URL=https://github.com/cartesi/riscv-pk/archive/v${RISCV_PK_VERSION}.tar.gz
-$(RISCV_PK_SRCPATH): | dep
-	T=`mktemp` && wget "$(URL)" -O $$T && mv $$T $@ || rm $$T
+clean-config:
+	rm -f ./cartesi-linux-config
+
+clean: clean-config
+	rm -rf artifacts/
+
+depclean: clean
+	rm -f \
+		$(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)

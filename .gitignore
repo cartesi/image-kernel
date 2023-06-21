@@ -1,8 +1,4 @@
-linux-*.elf
-linux-*.bin
-linux-nobbl-*.bin
-linux-headers-*.tar.xz
-linux-selftest-*.ext2
-linux-libc-dev-*.deb
+artifacts/*
+linux-*.tar.gz
+riscv-pk-*.tar.gz
 cartesi-linux-config
-dep
