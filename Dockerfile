@@ -39,14 +39,14 @@ USER developer
 
 # copy kernel
 # ------------------------------------------------------------------------------
-COPY --chown=developer:developer dep/linux-${KERNEL_VERSION}.tar.gz ${BUILD_BASE}/dep/
+COPY --chown=developer:developer linux-${KERNEL_VERSION}.tar.gz ${BUILD_BASE}/dep/
 RUN tar xzf ${BUILD_BASE}/dep/linux-${KERNEL_VERSION}.tar.gz \
   --strip-components=1 --one-top-level=${BUILD_BASE}/work/linux && \
   rm ${BUILD_BASE}/dep/linux-${KERNEL_VERSION}.tar.gz
 
 # copy riscv-pk
 # ------------------------------------------------------------------------------
-COPY --chown=developer:developer dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz ${BUILD_BASE}/dep/
+COPY --chown=developer:developer riscv-pk-${RISCV_PK_VERSION}.tar.gz ${BUILD_BASE}/dep/
 RUN tar xzf ${BUILD_BASE}/dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz \
   --strip-components=1 --one-top-level=${BUILD_BASE}/work/riscv-pk && \
   rm ${BUILD_BASE}/dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz
@@ -55,16 +55,21 @@ COPY cartesi-linux-config ${BUILD_BASE}/work/linux/.config
 
 # build
 # ------------------------------------------------------------------------------
+ARG IMAGE_KERNEL_VERSION=0.0.0
 COPY build.mk build.mk
-RUN make -f build.mk KERNEL_TIMESTAMP="${KERNEL_TIMESTAMP}"
+RUN make -f build.mk KERNEL_TIMESTAMP="${KERNEL_TIMESTAMP}" IMAGE_KERNEL_VERSION="${IMAGE_KERNEL_VERSION}"
 
 # deb headers
 # ------------------------------------------------------------------------------
 COPY tools tools
-RUN make -f build.mk KERNEL_TIMESTAMP="${KERNEL_TIMESTAMP}" DESTDIR=${BUILD_BASE}/work/_install cross-deb \
-	&& rm -rf ${BUILD_BASE}/work/_install
-RUN make -f build.mk KERNEL_TIMESTAMP="${KERNEL_TIMESTAMP}" DESTDIR=${BUILD_BASE}/work/_install native-deb \
-	&& rm -rf ${BUILD_BASE}/work/_install
+RUN \
+  make -f build.mk KERNEL_TIMESTAMP="${KERNEL_TIMESTAMP}" IMAGE_KERNEL_VERSION="${IMAGE_KERNEL_VERSION}" \
+    DESTDIR=${BUILD_BASE}/work/_install cross-deb && \
+  rm -rf ${BUILD_BASE}/work/_install
+RUN \
+  make -f build.mk KERNEL_TIMESTAMP="${KERNEL_TIMESTAMP}" IMAGE_KERNEL_VERSION="${IMAGE_KERNEL_VERSION}" \
+    DESTDIR=${BUILD_BASE}/work/_install native-deb && \
+  rm -rf ${BUILD_BASE}/work/_install
 
 USER root
 
