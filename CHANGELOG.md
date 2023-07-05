@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ## Changed
 - Make kernel build timestamp deterministic
+- Migrated to Github Container Registry
 - Updated CI downloads to public infrastructure
 - Updated CI actions versions
 - Added deb generation and upload to CI as artifact
