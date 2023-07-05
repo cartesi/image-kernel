@@ -114,10 +114,10 @@ clone: LINUX_BRANCH ?= linux-5.15.63-ctsi-y
 clone: RISCV_PK_BRANCH ?= v1.0.0-ctsi-1
 clone:
 	git clone --depth 1 --branch $(LINUX_BRANCH) \
-		git@github.com:cartesi-corp/linux.git $(LINUX_DIR) || \
+		git@github.com:cartesi/linux.git $(LINUX_DIR) || \
 		cd $(LINUX_DIR) && git pull
 	git clone --depth 1 --branch $(RISCV_PK_BRANCH) \
-		git@github.com:cartesi-corp/riscv-pk.git $(RISCV_PK_DIR) || \
+		git@github.com:cartesi/riscv-pk.git $(RISCV_PK_DIR) || \
 		cd $(RISCV_PK_DIR) && git pull
 
 run: IMG=cartesi/toolchain:devel
