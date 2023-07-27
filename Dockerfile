@@ -1,21 +1,22 @@
-# Copyright 2019 Cartesi Pte. Ltd.
+# Copyright Cartesi and individual authors (see AUTHORS)
+# SPDX-License-Identifier: Apache-2.0
 #
-# Licensed under the Apache License, Version 2.0 (the "License"); you may not
-# use this file except in compliance with the License. You may obtain a copy of
-# the License at http://www.apache.org/licenses/LICENSE-2.0
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-# License for the specific language governing permissions and limitations under
-# the License.
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 ARG TOOLCHAIN_REPOSITORY=cartesi/toolchain
 ARG TOOLCHAIN_VERSION=latest
 FROM ${TOOLCHAIN_REPOSITORY}:${TOOLCHAIN_VERSION}
-
-LABEL maintainer="Diego Nehab <diego@cartesi.io>"
 
 ARG KERNEL_VERSION=0.0.0-ctsi-y
 ARG KERNEL_TIMESTAMP="Thu, 01 Jan 1970 00:00:00 +0000"
