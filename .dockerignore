@@ -1,6 +1,8 @@
 .git*
+linux-*.elf
 linux*.bin
 linux*.tar.xz
+linux*.ext2
 configs
 README.md
 work
