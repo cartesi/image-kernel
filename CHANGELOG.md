@@ -5,12 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-## Changed
+
+## [0.17.0] - 2023-08-14
+### Added
+- Added support for building ARM64 images with depot.dev
+
+### Changed
 - Make kernel build timestamp deterministic
 - Updated license/copyright notice in all source code
 - Updated CI downloads to public infrastructure
 - Updated CI actions versions
 - Added deb generation and upload to CI as artifact
+- Updated toolchain to v0.15.0
 
 ## [0.16.0] - 2023-03-30
 ### Changed
@@ -72,7 +78,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [0.2.0]
 - [0.1.0]
 
-[Unreleased]: https://github.com/cartesi/image-kernel/compare/v0.16.0...HEAD
+[Unreleased]: https://github.com/cartesi/image-kernel/compare/v0.17.0...HEAD
+[0.17.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.17.0
 [0.16.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.16.0
 [0.15.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.15.0
 [0.14.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.14.0

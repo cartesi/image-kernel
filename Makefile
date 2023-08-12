@@ -17,7 +17,7 @@
 .PHONY: all build download push run pull share copy clean clean-config checksum
 
 MAJOR := 0
-MINOR := 16
+MINOR := 17
 PATCH := 0
 LABEL :=
 IMAGE_KERNEL_VERSION?= $(MAJOR).$(MINOR).$(PATCH)$(LABEL)
