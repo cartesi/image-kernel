@@ -29,8 +29,8 @@ TOOLCHAIN_REPOSITORY ?= cartesi/toolchain
 TOOLCHAIN_TAG ?= 0.15.0
 KERNEL_VERSION ?= 5.15.63-ctsi-2
 KERNEL_SRCPATH := linux-$(KERNEL_VERSION).tar.gz
-RISCV_PK_VERSION ?= 1.0.0-ctsi-1
-RISCV_PK_SRCPATH := riscv-pk-$(RISCV_PK_VERSION).tar.gz
+OPENSBI_VERSION ?= ports/cartesi
+OPENSBI_SRCPATH := opensbi.tar.gz
 KERNEL_CONFIG ?= configs/default-linux-config
 
 CONTAINER_BASE := /opt/cartesi/kernel
@@ -66,8 +66,8 @@ ifneq ($(KERNEL_TIMESTAMP),)
 BUILD_ARGS += --build-arg KERNEL_TIMESTAMP="$(KERNEL_TIMESTAMP)"
 endif
 
-ifneq ($(RISCV_PK_VERSION),)
-BUILD_ARGS += --build-arg RISCV_PK_VERSION=$(RISCV_PK_VERSION)
+ifneq ($(OPENSBI_VERSION),)
+BUILD_ARGS += --build-arg OPENSBI_VERSION=$(OPENSBI_VERSION)
 endif
 
 .NOTPARALLEL: all
@@ -103,7 +103,7 @@ config: cartesi-linux-config run-as-root
 env:
 	@echo KERNEL_VERSION="$(KERNEL_VERSION)"
 	@echo IMAGE_KERNEL_VERSION="$(IMAGE_KERNEL_VERSION)"
-	@echo RISCV_PK_VERSION="$(RISCV_PK_VERSION)"
+	@echo OPENSBI_VERSION="$(OPENSBI_VERSION)"
 	@echo TOOLCHAIN_REPOSITORY="$(TOOLCHAIN_REPOSITORY)"
 	@echo TOOLCHAIN_VERSION="$(TOOLCHAIN_TAG)"
 	@make -srf build.mk KERNEL_VERSION=$(KERNEL_VERSION) IMAGE_KERNEL_VERSION=$(IMAGE_KERNEL_VERSION) env
@@ -118,13 +118,13 @@ cartesi-linux-config:
 $(KERNEL_SRCPATH):
 	wget -O $@ https://github.com/cartesi/linux/archive/v$(KERNEL_VERSION).tar.gz
 
-$(RISCV_PK_SRCPATH):
-	wget -O $@ https://github.com/cartesi/riscv-pk/archive/v$(RISCV_PK_VERSION).tar.gz
+$(OPENSBI_SRCPATH):
+	wget -O $@ https://github.com/cartesi/opensbi/archive/refs/heads/$(OPENSBI_VERSION).tar.gz
 
-checksum: $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
+checksum: $(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)
 	shasum -ca 256 shasumfile
 
-shasumfile: $(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
+shasumfile: $(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)
 	@shasum -a 256 $^ > $@
 
 download: checksum
@@ -137,4 +137,4 @@ clean: clean-config
 
 depclean: clean
 	rm -f \
-		$(KERNEL_SRCPATH) $(RISCV_PK_SRCPATH)
+		$(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)

@@ -20,7 +20,6 @@ FROM ${TOOLCHAIN_REPOSITORY}:${TOOLCHAIN_VERSION}
 
 ARG KERNEL_VERSION=0.0.0-ctsi-y
 ARG KERNEL_TIMESTAMP="Thu, 01 Jan 1970 00:00:00 +0000"
-ARG RISCV_PK_VERSION=0.0.0-ctsi-y
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -45,12 +44,12 @@ RUN tar xzf ${BUILD_BASE}/dep/linux-${KERNEL_VERSION}.tar.gz \
   --strip-components=1 --one-top-level=${BUILD_BASE}/work/linux && \
   rm ${BUILD_BASE}/dep/linux-${KERNEL_VERSION}.tar.gz
 
-# copy riscv-pk
+# copy opensbi
 # ------------------------------------------------------------------------------
-COPY --chown=developer:developer riscv-pk-${RISCV_PK_VERSION}.tar.gz ${BUILD_BASE}/dep/
-RUN tar xzf ${BUILD_BASE}/dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz \
-  --strip-components=1 --one-top-level=${BUILD_BASE}/work/riscv-pk && \
-  rm ${BUILD_BASE}/dep/riscv-pk-${RISCV_PK_VERSION}.tar.gz
+COPY --chown=developer:developer opensbi.tar.gz ${BUILD_BASE}/dep/
+RUN tar xzf ${BUILD_BASE}/dep/opensbi.tar.gz \
+  --strip-components=1 --one-top-level=${BUILD_BASE}/work/opensbi && \
+  rm ${BUILD_BASE}/dep/opensbi.tar.gz
 
 COPY cartesi-linux-config ${BUILD_BASE}/work/linux/.config
 
