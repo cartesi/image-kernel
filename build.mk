@@ -67,7 +67,7 @@ native-deb: # HOST   == riscv64
 
 # build linux w/ opensbi
 # ------------------------------------------------------------------------------
-OPENSBI_OPTS=$(JOBS) FW_PAYLOAD_PATH=$(abspath $(IMAGE)) PLATFORM=cartesi CROSS_COMPILE=$(TOOLCHAIN_PREFIX)-
+OPENSBI_OPTS=$(JOBS) FW_PAYLOAD=y FW_PAYLOAD_PATH=$(abspath $(IMAGE)) PLATFORM=cartesi CROSS_COMPILE=$(TOOLCHAIN_PREFIX)-
 $(LINUX): $(IMAGE)
 	@mkdir -p artifacts
 	$(MAKE) -rC $(OPENSBI_DIR) $(OPENSBI_OPTS)
