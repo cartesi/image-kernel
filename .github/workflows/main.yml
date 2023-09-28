@@ -73,6 +73,13 @@ jobs:
         with:
           path: artifacts/*
 
+      - name: Checksum artifacts
+        shell: bash
+        run: |
+          for f in artifacts/*; do
+            sha512sum $f > $f.sha512
+          done
+
       - uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/v')
         with:
