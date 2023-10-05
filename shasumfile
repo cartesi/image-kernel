@@ -1,2 +1,2 @@
-e8d4d1882632eac7fd8e433b4eb4db014fd56e645fdad3b89be7d1ca4f20ca07  linux-5.15.63-ctsi-2.tar.gz
-9a873345b9914940e7bf03a167da823910c8a2acadd818b780ffbd1a3edcc4c5  riscv-pk-1.0.0-ctsi-1.tar.gz
+e8d4d1882632eac7fd8e433b4eb4db014fd56e645fdad3b89be7d1ca4f20ca07  dep/linux-5.15.63-ctsi-2.tar.gz
+dad6cc6b0efeb3fd34d80199279dbaf7217c2f2179a5fdb639c3829e62f6b44a  dep/opensbi-opensbi-1.2-ctsi-y.tar.gz

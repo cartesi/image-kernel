@@ -1,7 +1,7 @@
 TOOLCHAIN_PREFIX    := riscv64-cartesi-linux-gnu
 
-RISCV_PK_DIR        := work/riscv-pk
-RISCV_PK_BUILD_DIR  := $(RISCV_PK_DIR)/build
+OPENSBI_DIR        := work/opensbi
+OPENSBI_BUILD_DIR  := $(OPENSBI_DIR)/build
 
 LINUX_DIR           := work/linux
 LINUX_TEST_DIR      := $(LINUX_DIR)/tools/testing/selftests
@@ -65,23 +65,13 @@ native-deb: # HOST   == riscv64
 	find $(DESTDIR) -exec touch -d "$(KERNEL_TIMESTAMP)" {} \;
 	SOURCE_DATE_EPOCH="1" dpkg-deb -Zxz --root-owner-group --build $(DESTDIR) $(NATIVE_DEB_FILENAME)
 
-# configure riscv-pk
+# build linux w/ opensbi
 # ------------------------------------------------------------------------------
-$(RISCV_PK_BUILD_DIR)/Makefile: $(LINUX_DIR)/vmlinux $(LINUX_DIR)/.config
-	@mkdir -p $(RISCV_PK_BUILD_DIR)
-	cd $(RISCV_PK_BUILD_DIR) && ../configure \
-		--with-payload=$(abspath $<) \
-		--disable-fp-emulation \
-		--host=$(TOOLCHAIN_PREFIX)
-
-# build linux w/ bbl
-# ------------------------------------------------------------------------------
-$(LINUX): $(RISCV_PK_DIR)/build/Makefile $(LINUX_DIR)/vmlinux
-	mkdir -p artifacts
-	$(MAKE) $(JOBS) -rC $(RISCV_PK_BUILD_DIR) bbl
-	$(TOOLCHAIN_PREFIX)-objcopy \
-		-O binary $(RISCV_PK_BUILD_DIR)/bbl $@
-	truncate -s %4096 $@
+OPENSBI_OPTS=$(JOBS) FW_PAYLOAD_PATH=$(abspath $(IMAGE)) PLATFORM=cartesi CROSS_COMPILE=$(TOOLCHAIN_PREFIX)-
+$(LINUX): $(IMAGE)
+	@mkdir -p artifacts
+	$(MAKE) -rC $(OPENSBI_DIR) $(OPENSBI_OPTS)
+	@cp $(OPENSBI_BUILD_DIR)/platform/cartesi/firmware/fw_payload.bin $@
 
 # build linux tests
 # ------------------------------------------------------------------------------
@@ -97,7 +87,8 @@ $(SELFTEST):
 
 clean:
 	$(MAKE) -rC $(LINUX_DIR) $(LINUX_OPTS) clean
-	$(MAKE) $(JOBS) -rC $(RISCV_PK_BUILD_DIR) clean
+	$(MAKE) $(JOBS) -rC $(OPENSBI_DIR) clean
+	@rm -rf $(OPENSBI_BUILD_DIR)
 
 run-selftest:
 	cartesi-machine.lua --rollup \
@@ -111,17 +102,17 @@ run-selftest:
 # clone (for non CI environment)
 # ------------------------------------------------------------------------------
 clone: LINUX_BRANCH ?= linux-5.15.63-ctsi-y
-clone: RISCV_PK_BRANCH ?= v1.0.0-ctsi-1
+clone: OPENSBI_BRANCH ?= opensbi-1.2-ctsi-y
 clone:
 	git clone --depth 1 --branch $(LINUX_BRANCH) \
 		git@github.com:cartesi/linux.git $(LINUX_DIR) || \
 		cd $(LINUX_DIR) && git pull
-	git clone --depth 1 --branch $(RISCV_PK_BRANCH) \
-		git@github.com:cartesi/riscv-pk.git $(RISCV_PK_DIR) || \
-		cd $(RISCV_PK_DIR) && git pull
+	git clone --depth 1 --branch $(OPENSBI_BRANCH) \
+		git@github.com:cartesi/opensbi.git $(OPENSBI_DIR) || \
+		cd $(OPENSBI_DIR) && git pull
 
 run: IMG=cartesi/toolchain:devel
 run:
 	$(MAKE) run IMG=$(IMG)
 
-.PHONY: $(RISCV_PK_BUILD_DIR)/Makefile $(LINUX_DIR)/vmlinux $(ARTIFACTS)
+.PHONY: $(OPENSBI_BUILD_DIR)/Makefile $(LINUX_DIR)/vmlinux $(ARTIFACTS)
