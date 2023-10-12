@@ -27,7 +27,7 @@ UNAME:=$(shell uname)
 TAG ?= devel
 TOOLCHAIN_REPOSITORY ?= cartesi/toolchain
 TOOLCHAIN_TAG ?= 0.15.0
-KERNEL_VERSION ?= 5.15.63-ctsi-2
+KERNEL_VERSION ?= 5.15.63-ctsi-y
 KERNEL_SRCPATH := dep/linux-${KERNEL_VERSION}.tar.gz
 OPENSBI_VERSION ?= opensbi-1.2-ctsi-y
 OPENSBI_SRCPATH := dep/opensbi-${OPENSBI_VERSION}.tar.gz
@@ -122,7 +122,7 @@ cartesi-linux-config:
 	cp $(KERNEL_CONFIG) ./cartesi-linux-config
 
 $(KERNEL_SRCPATH):
-	wget -O $@ https://github.com/cartesi/linux/archive/v$(KERNEL_VERSION).tar.gz
+	wget -O $@ https://github.com/cartesi/linux/archive/refs/heads/linux-$(KERNEL_VERSION).tar.gz
 
 clean-config:
 	rm -f ./cartesi-linux-config
