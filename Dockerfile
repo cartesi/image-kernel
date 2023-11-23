@@ -52,8 +52,6 @@ RUN tar xzf ${BUILD_BASE}/dep/opensbi-${OPENSBI_VERSION}.tar.gz \
   --strip-components=1 --one-top-level=${BUILD_BASE}/work/opensbi && \
   rm ${BUILD_BASE}/dep/opensbi-${OPENSBI_VERSION}.tar.gz
 
-COPY cartesi-linux-config ${BUILD_BASE}/work/linux/.config
-
 # build
 # ------------------------------------------------------------------------------
 ARG IMAGE_KERNEL_VERSION=0.0.0

@@ -79,7 +79,7 @@ endif
 .NOTPARALLEL: all
 all: build copy
 
-build: cartesi-linux-config download
+build: download
 	docker build -t $(IMG) $(BUILD_ARGS) .
 
 push:
@@ -104,7 +104,7 @@ run-as-root:
 		$(IMG) $(CONTAINER_COMMAND)
 
 config: CONTAINER_COMMAND := $(CONTAINER_BASE)/scripts/update-linux-config
-config: cartesi-linux-config run-as-root
+config: run-as-root
 
 env:
 	@echo KERNEL_VERSION="$(KERNEL_VERSION)"
@@ -118,14 +118,8 @@ copy:
 	   docker cp $$ID:$(BASE)/kernel/artifacts/ . && \
 	   docker rm -v $$ID
 
-cartesi-linux-config:
-	cp $(KERNEL_CONFIG) ./cartesi-linux-config
-
 $(KERNEL_SRCPATH):
 	wget -O $@ https://github.com/cartesi/linux/archive/refs/heads/linux-$(KERNEL_VERSION).tar.gz
-
-clean-config:
-	rm -f ./cartesi-linux-config
 
 clean: clean-config
 	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(SELFTEST)
