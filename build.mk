@@ -12,9 +12,9 @@ KERNEL_VERSION      ?= $(shell make -sC $(LINUX_DIR) kernelversion)
 KERNEL_TIMESTAMP    ?= $(shell date -Ru)
 IMAGE_KERNEL_VERSION?= 0.0.0
 HEADERS             := artifacts/linux-headers-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).tar.xz
-IMAGE               := artifacts/linux-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).bin
 LINUX               := artifacts/linux-opensbi-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).bin
-LINUX_ELF           := artifacts/linux-opensbi-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).elf
+IMAGE               := artifacts/linux-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).bin
+LINUX_ELF           := artifacts/linux-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).elf
 SELFTEST            := artifacts/linux-selftest-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).ext2
 CROSS_DEB_FILENAME  := artifacts/linux-libc-dev-riscv64-cross-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).deb
 NATIVE_DEB_FILENAME := artifacts/linux-libc-dev-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).deb
@@ -105,14 +105,16 @@ run-selftest:
 # clone (for non CI environment)
 # ------------------------------------------------------------------------------
 clone: LINUX_BRANCH ?= linux-5.15.63-ctsi-y
-clone: OPENSBI_BRANCH ?= opensbi-1.2-ctsi-y
+clone: OPENSBI_BRANCH ?= ports/opensbi-1.3.1
 clone:
 	git clone --depth 1 --branch $(LINUX_BRANCH) \
 		git@github.com:cartesi/linux.git $(LINUX_DIR) || \
-		cd $(LINUX_DIR) && git pull
-	git clone --depth 1 --branch $(OPENSBI_BRANCH) \
+		cd $(LINUX_DIR) && git pull || \
+		true
+	git clone --branch $(OPENSBI_BRANCH) \
 		git@github.com:cartesi/opensbi.git $(OPENSBI_DIR) || \
-		cd $(OPENSBI_DIR) && git pull
+		cd $(OPENSBI_DIR) && git pull || \
+		true
 
 run: IMG=cartesi/toolchain:devel
 run:

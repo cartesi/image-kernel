@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-.PHONY: all build download push run pull share copy clean clean-config checksum
+.PHONY: all build download push run pull share copy clean checksum
 
 MAJOR := 0
-MINOR := 17
+MINOR := 18
 PATCH := 0
 LABEL :=
 IMAGE_KERNEL_VERSION?= $(MAJOR).$(MINOR).$(PATCH)$(LABEL)
@@ -27,11 +27,14 @@ UNAME:=$(shell uname)
 TAG ?= devel
 TOOLCHAIN_REPOSITORY ?= cartesi/toolchain
 TOOLCHAIN_TAG ?= 0.15.0
-KERNEL_VERSION ?= 5.15.63-ctsi-y
-KERNEL_SRCPATH := dep/linux-${KERNEL_VERSION}.tar.gz
-OPENSBI_VERSION ?= opensbi-1.2-ctsi-y
-OPENSBI_SRCPATH := dep/opensbi-${OPENSBI_VERSION}.tar.gz
-KERNEL_CONFIG ?= configs/default-linux-config
+
+KERNEL_VERSION ?= 6.5.9
+KERNEL_BRANCH  ?= chore/migrate-cartesi-config
+KERNEL_SRCPATH := dep/linux-$(KERNEL_VERSION).tar.gz
+
+OPENSBI_VERSION ?= 1.3.1
+OPENSBI_BRANCH  ?= ports/opensbi-1.3.1
+OPENSBI_SRCPATH := dep/opensbi-$(OPENSBI_VERSION).tar.gz
 
 CONTAINER_BASE := /opt/cartesi/kernel
 
@@ -103,9 +106,6 @@ run-as-root:
 		-v `pwd`:$(CONTAINER_BASE) \
 		$(IMG) $(CONTAINER_COMMAND)
 
-config: CONTAINER_COMMAND := $(CONTAINER_BASE)/scripts/update-linux-config
-config: run-as-root
-
 env:
 	@echo KERNEL_VERSION="$(KERNEL_VERSION)"
 	@echo IMAGE_KERNEL_VERSION="$(IMAGE_KERNEL_VERSION)"
@@ -119,9 +119,12 @@ copy:
 	   docker rm -v $$ID
 
 $(KERNEL_SRCPATH):
-	wget -O $@ https://github.com/cartesi/linux/archive/refs/heads/linux-$(KERNEL_VERSION).tar.gz
+	wget -O $@ https://github.com/cartesi/linux/archive/refs/heads/$(KERNEL_BRANCH).tar.gz
 
-clean: clean-config
+$(OPENSBI_SRCPATH):
+	wget -O $@ https://github.com/cartesi/opensbi/archive/refs/heads/$(OPENSBI_BRANCH).tar.gz
+
+clean:
 	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(SELFTEST)
 
 depclean: clean
@@ -135,7 +138,3 @@ shasumfile: $(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)
 	@shasum -a 256 $^ > $@
 
 download: checksum
-
-$(OPENSBI_SRCPATH): URL=https://github.com/cartesi/opensbi/archive/${OPENSBI_VERSION}.tar.gz
-$(OPENSBI_SRCPATH): | dep
-	T=`mktemp` && wget "$(URL)" -O $$T && mv $$T $@ || rm $$T
