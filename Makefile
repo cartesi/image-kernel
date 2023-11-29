@@ -30,12 +30,10 @@ TOOLCHAIN_TAG ?= 0.15.0
 
 DEP_DIR := dep
 
-KERNEL_VERSION ?= 6.5.9
-KERNEL_BRANCH ?= linux-${KERNEL_VERSION}-ctsi-y
+KERNEL_VERSION ?= 6.5.9-ctsi-1
 KERNEL_SRCPATH := $(DEP_DIR)/linux-${KERNEL_VERSION}.tar.gz
 
-OPENSBI_VERSION ?= 1.3.1
-OPENSBI_BRANCH ?= opensbi-${OPENSBI_VERSION}-ctsi-y
+OPENSBI_VERSION ?= 1.3.1-ctsi-1
 OPENSBI_SRCPATH := $(DEP_DIR)/opensbi-${OPENSBI_VERSION}.tar.gz
 
 CONTAINER_BASE := /opt/cartesi/kernel
@@ -128,13 +126,13 @@ $(DEP_DIR):
 	mkdir dep
 
 $(KERNEL_SRCPATH): | $(DEP_DIR)
-	wget -O $@ https://github.com/cartesi/linux/archive/refs/heads/$(KERNEL_BRANCH).tar.gz
+	wget -O $@ https://github.com/cartesi/linux/archive/refs/tags/v$(KERNEL_VERSION).tar.gz
 
 $(OPENSBI_SRCPATH): | $(DEP_DIR)
-	wget -O $@ https://github.com/cartesi/opensbi/archive/refs/heads/$(OPENSBI_BRANCH).tar.gz
+	wget -O $@ https://github.com/cartesi/opensbi/archive/refs/tags/v$(OPENSBI_VERSION).tar.gz
 
 clean:
-	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(SELFTEST)
+	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(LINUX_ELF) $(SELFTEST)
 
 depclean: clean
 	rm -f \
