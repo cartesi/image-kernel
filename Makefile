@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-.PHONY: all build download push run pull share copy clean clean-config checksum
+.PHONY: all build download push run pull share copy clean checksum
 
 MAJOR := 0
 MINOR := 18
@@ -27,11 +27,16 @@ UNAME:=$(shell uname)
 TAG ?= devel
 TOOLCHAIN_REPOSITORY ?= cartesi/toolchain
 TOOLCHAIN_TAG ?= 0.15.0
-KERNEL_VERSION ?= linux-6.5.9-ctsi-y
-KERNEL_SRCPATH := dep/linux-${KERNEL_VERSION}.tar.gz
-OPENSBI_VERSION ?= opensbi-1.3.1-ctsi-y
-OPENSBI_SRCPATH := dep/opensbi-${OPENSBI_VERSION}.tar.gz
-KERNEL_CONFIG ?= configs/default-linux-config
+
+DEP_DIR := dep
+
+KERNEL_VERSION ?= 6.5.9
+KERNEL_BRANCH ?= linux-${KERNEL_VERSION}-ctsi-y
+KERNEL_SRCPATH := $(DEP_DIR)/linux-${KERNEL_VERSION}.tar.gz
+
+OPENSBI_VERSION ?= 1.3.1
+OPENSBI_BRANCH ?= opensbi-${OPENSBI_VERSION}-ctsi-y
+OPENSBI_SRCPATH := $(DEP_DIR)/opensbi-${OPENSBI_VERSION}.tar.gz
 
 CONTAINER_BASE := /opt/cartesi/kernel
 
@@ -79,7 +84,7 @@ endif
 .NOTPARALLEL: all
 all: build copy
 
-build: cartesi-linux-config download
+build: download
 	docker build -t $(IMG) $(BUILD_ARGS) .
 
 push:
@@ -103,14 +108,11 @@ run-as-root:
 		-v `pwd`:$(CONTAINER_BASE) \
 		$(IMG) $(CONTAINER_COMMAND)
 
-config: CONTAINER_COMMAND := $(CONTAINER_BASE)/scripts/update-linux-config
-config: cartesi-linux-config run-as-root
-
 env:
 	@echo KERNEL_VERSION="$(KERNEL_VERSION)"
 	@echo KERNEL_TIMESTAMP="$(KERNEL_TIMESTAMP)"
 	@echo IMAGE_KERNEL_VERSION="$(IMAGE_KERNEL_VERSION)"
-	@echo RISCV_PK_VERSION="$(RISCV_PK_VERSION)"
+	@echo OPENSBI_VERSION="$(OPENSBI_VERSION)"
 	@echo TOOLCHAIN_REPOSITORY="$(TOOLCHAIN_REPOSITORY)"
 	@echo TOOLCHAIN_VERSION="$(TOOLCHAIN_TAG)"
 	@make -srf build.mk \
@@ -122,16 +124,16 @@ copy:
 	   docker cp $$ID:$(BASE)/kernel/artifacts/ . && \
 	   docker rm -v $$ID
 
-cartesi-linux-config:
-	cp $(KERNEL_CONFIG) ./cartesi-linux-config
+$(DEP_DIR):
+	mkdir dep
 
-$(KERNEL_SRCPATH):
-	wget -O $@ https://github.com/cartesi/linux/archive/refs/heads/$(KERNEL_VERSION).tar.gz
+$(KERNEL_SRCPATH): | $(DEP_DIR)
+	wget -O $@ https://github.com/cartesi/linux/archive/refs/heads/$(KERNEL_BRANCH).tar.gz
 
-clean-config:
-	rm -f ./cartesi-linux-config
+$(OPENSBI_SRCPATH): | $(DEP_DIR)
+	wget -O $@ https://github.com/cartesi/opensbi/archive/refs/heads/$(OPENSBI_BRANCH).tar.gz
 
-clean: clean-config
+clean:
 	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(SELFTEST)
 
 depclean: clean
@@ -145,7 +147,3 @@ shasumfile: $(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)
 	@shasum -a 256 $^ > $@
 
 download: checksum
-
-$(OPENSBI_SRCPATH): URL=https://github.com/cartesi/opensbi/archive/refs/heads/${OPENSBI_VERSION}.tar.gz
-$(OPENSBI_SRCPATH): | dep
-	T=`mktemp` && wget "$(URL)" -O $$T && mv $$T $@ || rm $$T

@@ -13,9 +13,6 @@ jobs:
       - name: Retrieve environment variables
         run: make env >> $GITHUB_ENV
 
-      - name: Copy default Cartesi Linux config
-        run: make cartesi-linux-config
-
       - name: Docker meta
         id: docker_meta
         uses: docker/metadata-action@v4

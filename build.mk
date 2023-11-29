@@ -12,8 +12,8 @@ KERNEL_VERSION      ?= $(shell make -sC $(LINUX_DIR) kernelversion)
 KERNEL_TIMESTAMP    ?= $(shell date -Ru)
 IMAGE_KERNEL_VERSION?= 0.0.0
 HEADERS             := artifacts/linux-headers-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).tar.xz
-IMAGE               := artifacts/linux-nobbl-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).bin
-LINUX               := artifacts/linux-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).bin
+IMAGE               := artifacts/linux-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).bin
+LINUX               := artifacts/linux-opensbi-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).bin
 LINUX_ELF           := artifacts/linux-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).elf
 SELFTEST            := artifacts/linux-selftest-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).ext2
 CROSS_DEB_FILENAME  := artifacts/linux-libc-dev-riscv64-cross-$(KERNEL_VERSION)-v$(IMAGE_KERNEL_VERSION).deb
@@ -48,6 +48,9 @@ $(LINUX_DIR)/vmlinux $(IMAGE) $(HEADERS) &: $(LINUX_DIR)/.config
 	tar --sort=name --mtime="$(KERNEL_TIMESTAMP)" --owner=1000 --group=1000 --numeric-owner -cJf $(HEADERS) $(abspath work/linux-headers)
 	cp work/linux/arch/riscv/boot/Image $(IMAGE)
 	cp $(LINUX_DIR)/vmlinux $(LINUX_ELF)
+
+$(LINUX_DIR)/.config:
+	$(MAKE) -rC $(LINUX_DIR) $(LINUX_OPTS) cartesi_defconfig
 
 cross-deb:  # TARGET == riscv64
 	mkdir -p $(DESTDIR)/DEBIAN
