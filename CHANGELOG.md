@@ -6,10 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.0] - 2023-11-30
+### Changed
 - Bump toolchain base image to v0.16.0
 - Bump kernel version to 6.5.9
 - Replace BBL with OpenSBI to support hypervisor
-- Move kernel configs to the linux repo
+- Changed SLAB allocator to SLUB
+- Deactivation of riscv32 compatibility and suspend configurations.
+- Move kernel configs to the linux source repo
+
+### Added
+- User space sandboxing and metering configurations.
+- Restriction against user space root modifying kernel code.
+- Support for mounting compressed filesystems with SquashFS.
+- vsock implementation for guest-host machine communication.
+- Network bridge support.
+- KVM and VirtIO devices support.
+- Build process now sets kernel timestamp.
 
 ## [0.18.0] - 2023-10-10
 ### Changed
@@ -91,7 +104,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [0.2.0]
 - [0.1.0]
 
-[Unreleased]: https://github.com/cartesi/image-kernel/compare/v0.18.0...HEAD
+[Unreleased]: https://github.com/cartesi/image-kernel/compare/v0.19.0...HEAD
+[0.19.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.19.0
 [0.18.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.18.0
 [0.17.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.17.0
 [0.16.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.16.0
