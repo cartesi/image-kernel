@@ -47,12 +47,6 @@ else
 KERNEL_TIMESTAMP ?= $(shell date -Rud @$(shell git log -1 --format=%ct 2> /dev/null || date +%s))
 endif
 
-HEADERS  := linux-headers-$(KERNEL_VERSION).tar.xz
-IMAGE    := linux-nobl-$(KERNEL_VERSION).bin
-LINUX    := linux-$(KERNEL_VERSION).bin
-LINUX_ELF:= linux-$(KERNEL_VERSION).elf
-SELFTEST := linux-selftest-$(KERNEL_VERSION).ext2
-
 BUILD_ARGS :=
 
 ifneq ($(IMAGE_KERNEL_VERSION),)
@@ -132,10 +126,10 @@ $(OPENSBI_SRCPATH): | $(DEP_DIR)
 	wget -O $@ https://github.com/cartesi/opensbi/archive/refs/tags/v$(OPENSBI_VERSION).tar.gz
 
 clean:
-	rm -f $(HEADERS) $(IMAGE) $(LINUX) $(LINUX_ELF) $(SELFTEST)
+	@rm -rf ./artifacts
 
-depclean: clean
-	rm -f \
+distclean depclean: clean
+	@rm -f \
 		$(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)
 
 checksum: $(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)
