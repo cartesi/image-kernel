@@ -100,6 +100,7 @@ jobs:
             TOOLCHAIN_REPOSITORY=${{ env.TOOLCHAIN_REPOSITORY }}
             TOOLCHAIN_VERSION=${{ env.TOOLCHAIN_VERSION }}
             KERNEL_VERSION=${{ env.KERNEL_VERSION }}
+            KERNEL_TIMESTAMP=${{ env.KERNEL_TIMESTAMP }}
             IMAGE_KERNEL_VERSION=${{ env.IMAGE_KERNEL_VERSION }}
             OPENSBI_VERSION=${{ env.OPENSBI_VERSION }}
           cache-from: type=gha,scope=regular
