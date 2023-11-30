@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Bump toolchain base image to v0.16.0
 - Bump kernel version to 6.5.9
 - Replace BBL with OpenSBI to support hypervisor
 - Move kernel configs to the linux repo

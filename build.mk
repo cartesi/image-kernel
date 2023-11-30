@@ -85,7 +85,7 @@ $(SELFTEST):
 	$(MAKE) $(JOBS) -rC $(LINUX_TEST_DIR) $(LINUX_OPTS) \
 		TARGETS=drivers/cartesi install
 	tar --sort=name --mtime="$(KERNEL_TIMESTAMP)" --owner=1000 --group=1000 --numeric-owner -cf $(TAR) --directory=$(LINUX_TEST_DIR)/kselftest_install .
-	genext2fs -f -i 4096 -b 1024 -a $(TAR) $@
+	xgenext2fs -f -i 4096 -b 1024 -a $(TAR) $@
 	rm $(TAR)
 
 clean:

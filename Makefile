@@ -26,7 +26,7 @@ UNAME:=$(shell uname)
 
 TAG ?= devel
 TOOLCHAIN_REPOSITORY ?= cartesi/toolchain
-TOOLCHAIN_TAG ?= 0.15.0
+TOOLCHAIN_TAG ?= 0.16.0
 
 DEP_DIR := dep
 
