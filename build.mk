@@ -45,7 +45,7 @@ $(LINUX_DIR)/vmlinux $(IMAGE) $(HEADERS) &: $(LINUX_DIR)/.config
 	$(MAKE) -rC $(LINUX_DIR) $(LINUX_OPTS) vmlinux Image
 	$(MAKE) -rC $(LINUX_DIR) $(LINUX_OPTS) headers_install \
 		INSTALL_HDR_PATH=$(abspath work/linux-headers)
-	tar --sort=name --mtime="$(KERNEL_TIMESTAMP)" --owner=1000 --group=1000 --numeric-owner -cJf $(HEADERS) $(abspath work/linux-headers)
+	tar --sort=name --mtime="$(KERNEL_TIMESTAMP)" --owner=1000 --group=1000 --numeric-owner -cJf $(HEADERS) -C $(abspath work/linux-headers) .
 	cp work/linux/arch/riscv/boot/Image $(IMAGE)
 	cp $(LINUX_DIR)/vmlinux $(LINUX_ELF)
 
