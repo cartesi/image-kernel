@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.19.1] - 2023-12-05
+### Fix
+- Remove the path from linux headers tarball contents.
+- Use *all* as architecture in the deb control file.
+
 ## [0.19.0] - 2023-11-30
 ### Changed
 - Bump toolchain base image to v0.16.0
@@ -104,7 +109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [0.2.0]
 - [0.1.0]
 
-[Unreleased]: https://github.com/cartesi/image-kernel/compare/v0.19.0...HEAD
+[Unreleased]: https://github.com/cartesi/image-kernel/compare/v0.19.1...HEAD
+[0.19.1]: https://github.com/cartesi/image-kernel/compare/v0.19.1
 [0.19.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.19.0
 [0.18.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.18.0
 [0.17.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.17.0
