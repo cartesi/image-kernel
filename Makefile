@@ -17,8 +17,8 @@
 .PHONY: all build download push run pull share copy clean checksum
 
 MAJOR := 0
-MINOR := 19
-PATCH := 1
+MINOR := 20
+PATCH := 0
 LABEL :=
 IMAGE_KERNEL_VERSION?= $(MAJOR).$(MINOR).$(PATCH)$(LABEL)
 
@@ -26,11 +26,11 @@ UNAME:=$(shell uname)
 
 TAG ?= devel
 TOOLCHAIN_REPOSITORY ?= cartesi/toolchain
-TOOLCHAIN_TAG ?= 0.16.0
+TOOLCHAIN_TAG ?= 0.17.0
 
 DEP_DIR := dep
 
-KERNEL_VERSION ?= 6.5.9-ctsi-1
+KERNEL_VERSION ?= 6.5.13-ctsi-1
 KERNEL_SRCPATH := $(DEP_DIR)/linux-${KERNEL_VERSION}.tar.gz
 
 OPENSBI_VERSION ?= 1.3.1-ctsi-2
@@ -129,8 +129,7 @@ clean:
 	@rm -rf ./artifacts
 
 distclean depclean: clean
-	@rm -f \
-		$(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)
+	@rm -f $(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)
 
 checksum: $(KERNEL_SRCPATH) $(OPENSBI_SRCPATH)
 	shasum -ca 256 shasumfile

@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [0.20.0] - 2024-04-15
+### Changed
+- Updated Linux Kernel to v6.5.13-ctsi-1
+- Updated OpenSBI to v1.3.1-ctsi-2
 
 ## [0.19.1] - 2023-12-05
 ### Fix
@@ -109,8 +113,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [0.2.0]
 - [0.1.0]
 
-[Unreleased]: https://github.com/cartesi/image-kernel/compare/v0.19.1...HEAD
-[0.19.1]: https://github.com/cartesi/image-kernel/compare/v0.19.1
+[Unreleased]: https://github.com/cartesi/image-kernel/compare/v0.20.0...HEAD
+[0.20.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.20.0
+[0.19.1]: https://github.com/cartesi/image-kernel/releases/tag/v0.19.1
 [0.19.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.19.0
 [0.18.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.18.0
 [0.17.0]: https://github.com/cartesi/image-kernel/releases/tag/v0.17.0
