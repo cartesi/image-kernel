@@ -14,23 +14,51 @@
 # limitations under the License.
 #
 
-ARG TOOLCHAIN_REPOSITORY=cartesi/toolchain
-ARG TOOLCHAIN_VERSION=latest
-FROM ${TOOLCHAIN_REPOSITORY}:${TOOLCHAIN_VERSION}
+FROM debian:bookworm
 
 ARG KERNEL_VERSION=0.0.0-ctsi-y
 ARG KERNEL_TIMESTAMP="Thu, 01 Jan 1970 00:00:00 +0000"
 ARG OPENSBI_VERSION=0.0.0-ctsi-y
+ARG TARGETARCH
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 ENV OLDPATH=$PATH
 
+ENV BASE=/opt/riscv
 ENV BUILD_BASE=$BASE/kernel
+
+# install dependencies
+# ------------------------------------------------------------------------------
+RUN apt-get update && \
+  apt-get install --no-install-recommends -y \
+    bc \
+    bison \
+    build-essential \
+    ca-certificates \
+    flex \
+    gcc-riscv64-linux-gnu \
+    libc6-dev-riscv64-cross \
+    make \
+    python3 \
+    rsync \
+    wget
+
+RUN \
+    wget -O /tmp/xgenext2fs.deb https://github.com/cartesi/genext2fs/releases/download/v1.5.3/xgenext2fs_${TARGETARCH}.deb && \
+    case ${TARGETARCH} in \
+      amd64) echo "a5e52d86d0bf4c2f9cc38370ea762dc5aee502a86abf8520798acbebd9d7f68f  /tmp/xgenext2fs.deb" | sha256sum --check ;; \
+      arm64) echo "54051a31a10ba5e4f472b8eeaa47c82f3d2e744991995b8ef6981b4c1ba424c2  /tmp/xgenext2fs.deb" | sha256sum --check ;; \
+    esac && \
+    apt-get update && \
+    apt-get install --no-install-recommends -y \
+      /tmp/xgenext2fs.deb && \
+    rm -rf /var/lib/apt/lists/*
 
 # setup dirs
 # ------------------------------------------------------------------------------
 RUN \
+  adduser developer -u 499 --gecos ",,," --disabled-password && \
   mkdir -p ${BUILD_BASE}/artifacts && \
   chown -R developer:developer ${BUILD_BASE} && \
   chmod go+w ${BUILD_BASE}
@@ -56,7 +84,10 @@ RUN tar xzf ${BUILD_BASE}/dep/opensbi-${OPENSBI_VERSION}.tar.gz \
 # ------------------------------------------------------------------------------
 ARG IMAGE_KERNEL_VERSION=0.0.0
 COPY build.mk build.mk
-RUN make -f build.mk KERNEL_TIMESTAMP="${KERNEL_TIMESTAMP}" IMAGE_KERNEL_VERSION="${IMAGE_KERNEL_VERSION}"
+RUN make -f build.mk \
+  KERNEL_TIMESTAMP="${KERNEL_TIMESTAMP}" \
+  IMAGE_KERNEL_VERSION="${IMAGE_KERNEL_VERSION}" \
+  TOOLCHAIN_PREFIX=riscv64-linux-gnu
 
 # deb headers
 # ------------------------------------------------------------------------------
