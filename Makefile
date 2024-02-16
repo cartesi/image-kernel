@@ -30,7 +30,7 @@ TOOLCHAIN_TAG ?= 0.16.0
 
 DEP_DIR := dep
 
-KERNEL_VERSION ?= 6.5.9-ctsi-2
+KERNEL_VERSION ?= 6.5.9-ctsi-2-output-unification-test1
 KERNEL_SRCPATH := $(DEP_DIR)/linux-${KERNEL_VERSION}.tar.gz
 
 OPENSBI_VERSION ?= 1.3.1-ctsi-1
@@ -120,7 +120,7 @@ $(DEP_DIR):
 	mkdir dep
 
 $(KERNEL_SRCPATH): | $(DEP_DIR)
-	wget -O $@ https://github.com/cartesi/linux/archive/refs/tags/v$(KERNEL_VERSION).tar.gz
+	@wget -O $@ https://github.com/cartesi/linux/archive/v$(KERNEL_VERSION).tar.gz
 
 $(OPENSBI_SRCPATH): | $(DEP_DIR)
 	wget -O $@ https://github.com/cartesi/opensbi/archive/refs/tags/v$(OPENSBI_VERSION).tar.gz
