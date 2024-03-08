@@ -33,7 +33,7 @@ DEP_DIR := dep
 KERNEL_VERSION ?= 6.5.9-ctsi-1
 KERNEL_SRCPATH := $(DEP_DIR)/linux-${KERNEL_VERSION}.tar.gz
 
-OPENSBI_VERSION ?= 1.3.1-ctsi-1
+OPENSBI_VERSION ?= 1.3.1-ctsi-2
 OPENSBI_SRCPATH := $(DEP_DIR)/opensbi-${OPENSBI_VERSION}.tar.gz
 
 CONTAINER_BASE := /opt/cartesi/kernel
